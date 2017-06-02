@@ -247,7 +247,11 @@ class ConfigHandler extends DefaultHandler {
 		int tag;
 		int monat=0;
 		int jahr;
-		
+		//Abfrage wie der String aufgebaut ist 
+		//Monat zahl-zahl,Jahr
+		//Monat, Jahr,Text
+		//Monat Jahr ( Ohne Komma)
+		//Monat Zahl - anderer Monat Zahl,Jahr
 		
 		tmp = s.split(" ");
 		
@@ -302,6 +306,8 @@ class ConfigHandler extends DefaultHandler {
 			// es gehen 1500 verloren --> Kein Monatsname?
 		}}}}}}}}}}}}
 		//Berechnung des Tages
+		
+		//vorher gucken ob wirklich zahlen des Tages drinstehen
 		tmp[1]=tmp[1].substring(0, tmp[1].length()-1);
 		
 		if (tmp[1].length()>2){
@@ -314,7 +320,9 @@ class ConfigHandler extends DefaultHandler {
 		
 		//Berechnung des Jahres
 		
-		jahr = Integer.parseInt(tmp[2].substring(0, 3));
+		//	if(tmp[2].matches("\\d\\d\\d\\d*")&& tmp[2].length() >0 )???
+		
+		jahr = Integer.parseInt(tmp[2].substring(0, 4));
 		
 		Date datum =new Date(jahr -1900, monat, tag);
 		
