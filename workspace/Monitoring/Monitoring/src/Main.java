@@ -36,6 +36,9 @@ public class Main {
 			// XMLReader erzeugen
 			XMLReader xmlReader = XMLReaderFactory.createXMLReader();
 
+			//ZipFile f = new ZipFile("http://dblp.uni-trier.de/xml/dblp.xml.gz");
+			
+			
 			// Pfad zur XML Datei
 			FileReader reader = new FileReader(
 					"/home/kiesant/Downloads/dblp.xml");
@@ -48,7 +51,7 @@ public class Main {
 			xmlReader.setContentHandler(new ConfigHandler());
 
 			// Parsen wird gestartet
-			xmlReader.parse(inputSource);
+			xmlReader.parse(inputSource);		
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -61,10 +64,12 @@ public class Main {
 
 class ConfigHandler extends DefaultHandler {
 	// Map<String, Date> mapeins = new HashMap<String, Date>();
-	Map<String, String> mapzwei = new HashMap<String, String>();
+	Map<String, Date> mapzwei = new HashMap<String, Date>();
 	String aktuellerStream;
 	StringBuilder textContent = new StringBuilder();
 
+	
+	
 	int counter;
 	int titlecounter;
 	private static long time;
@@ -106,7 +111,7 @@ class ConfigHandler extends DefaultHandler {
 
 			}
 
-			if (Pattern.matches(("conf/.*/\\d\\d\\d\\d.*"), aktuellerStream)) {
+			if (Pattern.matches(("conf/.*/\\d\\d\\d\\d[a-zA-Z_0-9]*"), aktuellerStream)) {
 
 				// System.out.print(aktuellerStream+" --> ");
 				// System.out.println(textContent.toString());
@@ -140,64 +145,78 @@ class ConfigHandler extends DefaultHandler {
 			if (aktuellerStream != null) {
 				String map;
 				
+				
 				if(text.contains("January")){
 					map=text.substring(text.indexOf("January"));
-					mapzwei.put(aktuellerStream, map);
+					mapzwei.put(aktuellerStream, toDate(map));
+					
 				}else{
 					
 				if(text.contains("February")){
 					map=text.substring(text.indexOf("February"));
-					mapzwei.put(aktuellerStream, map);
+					
+					mapzwei.put(aktuellerStream, toDate(map));
 				}else{
 					
 				if(text.contains("March")){
 					map=text.substring(text.indexOf("March"));
-					mapzwei.put(aktuellerStream, map);
+					
+					mapzwei.put(aktuellerStream, toDate(map));
 				}else{
 					
 				if(text.contains("April")){
 					map=text.substring(text.indexOf("April"));
-					mapzwei.put(aktuellerStream, map);
+				
+					mapzwei.put(aktuellerStream, toDate(map));
 				}else{
 					
 				if(text.contains("May")){
 					map=text.substring(text.indexOf("May"));
-					mapzwei.put(aktuellerStream, map);
+					
+					mapzwei.put(aktuellerStream, toDate(map));
 				}else{
 					
 				if(text.contains("June")){
 					map=text.substring(text.indexOf("June"));
-					mapzwei.put(aktuellerStream, map);
+					
+					mapzwei.put(aktuellerStream, toDate(map));
 				}else{
 					
 				if(text.contains("July")){
 					map=text.substring(text.indexOf("July"));
-					mapzwei.put(aktuellerStream, map);
+			
+					mapzwei.put(aktuellerStream, toDate(map));
 				}else{
 					
 				if(text.contains("August")){
 					map=text.substring(text.indexOf("August"));
-					mapzwei.put(aktuellerStream, map);
+			
+					mapzwei.put(aktuellerStream, toDate(map));
 				}else{
 					
 				if(text.contains("September")){
 					map=text.substring(text.indexOf("September"));
-					mapzwei.put(aktuellerStream, map);
+			
+					mapzwei.put(aktuellerStream, toDate(map));
 				}else{
 					
 				if(text.contains("October")){
 					map=text.substring(text.indexOf("October"));
-					mapzwei.put(aktuellerStream, map);
+			
+					mapzwei.put(aktuellerStream, toDate(map));
 				}else{
 					
 				if(text.contains("November")){
 					map=text.substring(text.indexOf("November"));
-					mapzwei.put(aktuellerStream, map);
+			
+					mapzwei.put(aktuellerStream, toDate(map));
 				}else{
 					
 				if(text.contains("December")){
 					map=text.substring(text.indexOf("December"));
-					mapzwei.put(aktuellerStream, map);
+			
+					mapzwei.put(aktuellerStream, toDate(map));
+					// es gehen 1500 verloren --> Kein Monatsname?
 				}}}}}}}}}}}}
 				
 				
@@ -220,15 +239,97 @@ class ConfigHandler extends DefaultHandler {
 			insideStream = false;
 
 		}
+		
+	}
+
+	public Date toDate(String s){
+		String[] tmp;
+		int tag;
+		int monat=0;
+		int jahr;
+		
+		
+		tmp = s.split(" ");
+		
+		//Berechnung des Monats
+		if(tmp[0].contains("January")){
+			monat=0;
+			
+		}else{
+			
+		if(tmp[0].contains("February")){
+			monat=1;
+		}else{
+			
+		if(tmp[0].contains("March")){
+			monat=2;
+		}else{
+			
+		if(tmp[0].contains("April")){
+			monat=3;
+		}else{
+			
+		if(tmp[0].contains("May")){
+			monat=4;
+		}else{
+			
+		if(tmp[0].contains("June")){
+			monat=5;
+		}else{
+			
+		if(tmp[0].contains("July")){
+			monat=6;
+		}else{
+			
+		if(tmp[0].contains("August")){
+			monat=7;
+		}else{
+			
+		if(tmp[0].contains("September")){
+			monat=8;
+		}else{
+			
+		if(tmp[0].contains("October")){
+			monat=9;
+		}else{
+			
+		if(tmp[0].contains("November")){
+			monat=10;
+		}else{
+			
+		if(tmp[0].contains("December")){
+			monat=11;
+			// es gehen 1500 verloren --> Kein Monatsname?
+		}}}}}}}}}}}}
+		//Berechnung des Tages
+		tmp[1]=tmp[1].substring(0, tmp[1].length()-1);
+		
+		if (tmp[1].length()>2){
+			String [] tmp2 = tmp[1].split("-");
+			tag=Integer.parseInt(tmp2[0]);
+		}else
+		{
+			tag=Integer.parseInt(tmp[1]);
+		}
+		
+		//Berechnung des Jahres
+		
+		jahr = Integer.parseInt(tmp[2].substring(0, 3));
+		
+		Date datum =new Date(jahr -1900, monat, tag);
+		
+		return datum;
 	}
 
 	public void endDocument() throws SAXException {
 
-		System.out.println("Anzahl der Tags: " + counter);
+		System.out.println("Anzahl der Tags: " + counter);	
 		System.out.println("Anzahl der titelTags: " + titlecounter);
 		System.out.println("end");
-
+		System.out.println(mapzwei.size());
 		System.out.println("Laufzeit: " + time + "ms");
+		System.out.println(mapzwei.get("conf/padl/2012"));
+		System.out.println(mapzwei.get("conf/its/2016"));
 	}
 
 	public void endPrefixMapping(String prefix) throws SAXException {
