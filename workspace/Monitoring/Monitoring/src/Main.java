@@ -1,17 +1,20 @@
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Map.Entry;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipFile;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -29,7 +32,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 
-public class Main {
+public class Maain {
 
 	public static void main(String[] args) {
 		try {
@@ -69,7 +72,7 @@ class ConfigHandler extends DefaultHandler {
 	StringBuilder textContent = new StringBuilder();
 
 	
-	
+	int ohneMonat=0;
 	int counter;
 	int titlecounter;
 	private static long time;
@@ -136,15 +139,20 @@ class ConfigHandler extends DefaultHandler {
 	// Methode wird aufgerufen wenn der Parser zu einem End-Tag kommt
 	public void endElement(String uri, String localName, String qName)
 			throws SAXException {
-
+		
+		
 		if (qName.equals("title") && insideStream && insideProceeding) {
 			insideTitle = false;
 			insideProceeding = false;
 			String text = textContent.toString();
-
+			
+			//pattern um zu gucken ob aktueller Steam das Jahr enthält
+			Pattern regex =Pattern.compile("\\d\\d\\d\\d");
+			Matcher regexMatcher = regex.matcher(aktuellerStream);
+			
 			if (aktuellerStream != null) {
 				String map;
-				
+				Date zero=new Date(1900,0,15);
 				
 				if(text.contains("January")){
 					map=text.substring(text.indexOf("January"));
@@ -217,7 +225,19 @@ class ConfigHandler extends DefaultHandler {
 			
 					mapzwei.put(aktuellerStream, toDate(map));
 					// es gehen 1500 verloren --> Kein Monatsname?
-				}}}}}}}}}}}}
+				}
+				else{
+					ohneMonat++;
+					if(regexMatcher.find()){
+						int jahr = Integer.parseInt(aktuellerStream.substring(regexMatcher.start(),regexMatcher.start()+4));
+						Date datum = new Date(jahr,0,15);
+						mapzwei.put(aktuellerStream,datum) ;
+					}else{
+						mapzwei.put(aktuellerStream, zero);
+					}
+				
+				}
+				}}}}}}}}}}}
 				
 				
 				
@@ -243,99 +263,112 @@ class ConfigHandler extends DefaultHandler {
 	}
 
 	public Date toDate(String s){
-		String[] tmp;
-		int tag;
+		
+		int tag=15;
 		int monat=0;
-		int jahr;
-		//Abfrage wie der String aufgebaut ist 
-		//Monat zahl-zahl,Jahr
-		//Monat, Jahr,Text
-		//Monat Jahr ( Ohne Komma)
-		//Monat Zahl - anderer Monat Zahl,Jahr
+		int jahr=1900;
+		Pattern regex =Pattern.compile("\\d\\d\\d\\d");
+		Matcher regexMatcher = regex.matcher(s);
+		Pattern days=Pattern.compile("\\d\\d");
+		Pattern oneday=Pattern.compile("\\d");
+		Matcher daysMatcher=days.matcher(s);
+		Matcher onedayMatcher=oneday.matcher(s);
 		
-		tmp = s.split(" ");
 		
+
+		
+		
+	
 		//Berechnung des Monats
-		if(tmp[0].contains("January")){
+		if(s.contains("January")){
 			monat=0;
 			
 		}else{
 			
-		if(tmp[0].contains("February")){
+		if(s.contains("February")){
 			monat=1;
 		}else{
 			
-		if(tmp[0].contains("March")){
+		if(s.contains("March")){
 			monat=2;
 		}else{
 			
-		if(tmp[0].contains("April")){
+		if(s.contains("April")){
 			monat=3;
 		}else{
 			
-		if(tmp[0].contains("May")){
+		if(s.contains("May")){
 			monat=4;
 		}else{
 			
-		if(tmp[0].contains("June")){
+		if(s.contains("June")){
 			monat=5;
 		}else{
 			
-		if(tmp[0].contains("July")){
+		if(s.contains("July")){
 			monat=6;
 		}else{
 			
-		if(tmp[0].contains("August")){
+		if(s.contains("August")){
 			monat=7;
 		}else{
 			
-		if(tmp[0].contains("September")){
+		if(s.contains("September")){
 			monat=8;
 		}else{
 			
-		if(tmp[0].contains("October")){
+		if(s.contains("October")){
 			monat=9;
 		}else{
 			
-		if(tmp[0].contains("November")){
+		if(s.contains("November")){
 			monat=10;
 		}else{
 			
-		if(tmp[0].contains("December")){
+		if(s.contains("December")){
 			monat=11;
 			// es gehen 1500 verloren --> Kein Monatsname?
 		}}}}}}}}}}}}
-		//Berechnung des Tages
-		
-		//vorher gucken ob wirklich zahlen des Tages drinstehen
-		tmp[1]=tmp[1].substring(0, tmp[1].length()-1);
-		
-		if (tmp[1].length()>2){
-			String [] tmp2 = tmp[1].split("-");
-			tag=Integer.parseInt(tmp2[0]);
-		}else
-		{
-			tag=Integer.parseInt(tmp[1]);
-		}
-		
-		//Berechnung des Jahres
-		
-		//	if(tmp[2].matches("\\d\\d\\d\\d*")&& tmp[2].length() >0 )???
-		
-		jahr = Integer.parseInt(tmp[2].substring(0, 4));
-		
-		Date datum =new Date(jahr -1900, monat, tag);
-		
-		return datum;
-	}
+		// Berechnung des Tages
+
+				// vorher gucken ob wirklich zahlen des Tages drinstehen
+				
+
+				 
+					if(daysMatcher.find()){
+						tag=Integer.parseInt(s.substring(daysMatcher.start(),daysMatcher.start()+2));
+					}else{
+						if(onedayMatcher.find()){
+							tag=Integer.parseInt(s.substring(onedayMatcher.start(),onedayMatcher.start()+1));
+						}
+						
+					}
+					
+				
+				
+				//
+				// Berechnung des Jahres
+
+				
+				if(regexMatcher.find()){
+				jahr =Integer.parseInt(s.substring(regexMatcher.start(),regexMatcher.start()+4));
+				}		
+				
+
+				Date datum = new Date(jahr - 1900, monat, tag);
+
+				return datum;
+			}
 
 	public void endDocument() throws SAXException {
 
 		System.out.println("Anzahl der Tags: " + counter);	
 		System.out.println("Anzahl der titelTags: " + titlecounter);
+		System.out.println(mapzwei.get("conf/mobihoc/2015mh"));
 		System.out.println("end");
 		System.out.println(mapzwei.size());
 		System.out.println("Laufzeit: " + time + "ms");
+		System.out.println("Titel ohne Monat"+ohneMonat);
 		System.out.println(mapzwei.get("conf/padl/2012"));
 		System.out.println(mapzwei.get("conf/its/2016"));
 	}
