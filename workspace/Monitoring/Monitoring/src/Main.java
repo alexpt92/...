@@ -1,6 +1,8 @@
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -10,6 +12,7 @@ import java.util.Map.Entry;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -70,7 +73,8 @@ class ConfigHandler extends DefaultHandler {
 	Map<String, Date> mapzwei = new HashMap<String, Date>();
 	String aktuellerStream;
 	StringBuilder textContent = new StringBuilder();
-
+	Map<String, Conf> finalmap = new HashMap<String, Conf>();
+	
 	
 	int ohneMonat=0;
 	int counter;
@@ -120,6 +124,24 @@ class ConfigHandler extends DefaultHandler {
 				// System.out.println(textContent.toString());
 				counter++;
 
+				String[] tmpa;
+				tmpa=aktuellerStream.split("/");
+				String tmp=tmpa[0]+"/"+tmpa[1]+"/";
+				
+				Conf c = new Conf(new Date(),0);
+				
+				if(finalmap.isEmpty()){
+					finalmap.put(tmp, c);
+				}else{
+					
+						if(!finalmap.containsKey(tmp)){
+							finalmap.put(tmp, c);
+						}
+					
+					
+				}
+			    
+				
 				insideStream = true;
 
 			}
@@ -128,12 +150,10 @@ class ConfigHandler extends DefaultHandler {
 		if (qName == "title" && insideStream) {
 			insideTitle = true;
 			titlecounter++;
-
+			
 		}
 
-		// Attribut id wird in einen Integer umgewandelt und dann zu der
-		// jeweiligen Person gesetzt
-		// person.setId(Integer.parseInt(atts.getValue("id")));
+
 	}
 
 	// Methode wird aufgerufen wenn der Parser zu einem End-Tag kommt
@@ -273,12 +293,7 @@ class ConfigHandler extends DefaultHandler {
 		Pattern oneday=Pattern.compile("\\d");
 		Matcher daysMatcher=days.matcher(s);
 		Matcher onedayMatcher=oneday.matcher(s);
-		
-		
 
-		
-		
-	
 		//Berechnung des Monats
 		if(s.contains("January")){
 			monat=0;
@@ -362,6 +377,39 @@ class ConfigHandler extends DefaultHandler {
 
 	public void endDocument() throws SAXException {
 
+		
+		try {
+            PrintStream ps;
+            ps = new PrintStream(new File("MapZweiPrint.txt"));
+
+        for (Entry<String, Date> entry : mapzwei.entrySet()) {
+            ps.println(entry.getKey() + " ;" + entry.getValue());       
+         
+            }ps.close(); 
+            }catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+		
+		
+		try {
+            PrintStream ps;
+            ps = new PrintStream(new File("FinalMapPrint.txt"));
+
+        for (Entry<String, Conf> entry : finalmap.entrySet()) {
+            ps.println(entry.getKey() + "; "+ entry.getValue().getDate() +"; " + entry.getValue().getYear());       
+         
+            }ps.close(); 
+            }catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+		
+		
+        System.out.println("File printed.");
+
+		
+		
 		System.out.println("Anzahl der Tags: " + counter);	
 		System.out.println("Anzahl der titelTags: " + titlecounter);
 		System.out.println(mapzwei.get("conf/mobihoc/2015mh"));
