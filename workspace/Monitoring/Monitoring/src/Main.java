@@ -13,6 +13,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -118,7 +120,7 @@ class ConfigHandler extends DefaultHandler {
 
 			}
 
-			if (Pattern.matches(("conf/.*/\\d\\d\\d\\d[a-zA-Z_0-9]*"), aktuellerStream)) {
+			if (Pattern.matches(("conf/.*"), aktuellerStream)) {
 
 				// System.out.print(aktuellerStream+" --> ");
 				// System.out.println(textContent.toString());
@@ -207,9 +209,13 @@ class ConfigHandler extends DefaultHandler {
 				if(text.contains("June")){
 					map=text.substring(text.indexOf("June"));
 					
+					
 					mapzwei.put(aktuellerStream, toDate(map));
 				}else{
-					
+				if(text.contains("Juni")){
+					map=text.substring(text.indexOf("Juni"));
+					mapzwei.put(aktuellerStream, toDate(map));
+				}else{
 				if(text.contains("July")){
 					map=text.substring(text.indexOf("July"));
 			
@@ -250,14 +256,14 @@ class ConfigHandler extends DefaultHandler {
 					ohneMonat++;
 					if(regexMatcher.find()){
 						int jahr = Integer.parseInt(aktuellerStream.substring(regexMatcher.start(),regexMatcher.start()+4));
-						Date datum = new Date(jahr,0,15);
+						Date datum = new Date(jahr-1900,0,15);
 						mapzwei.put(aktuellerStream,datum) ;
 					}else{
 						mapzwei.put(aktuellerStream, zero);
 					}
 				
 				}
-				}}}}}}}}}}}
+				}}}}}}}}}}}}
 				
 				
 				
@@ -281,6 +287,20 @@ class ConfigHandler extends DefaultHandler {
 		}
 		
 	}
+	
+	
+	public double jahrabstand(Date[] d){
+		
+		
+		double jahrabstand=0;
+		
+		
+		
+		
+		
+		return jahrabstand;
+	}
+	
 
 	public Date toDate(String s){
 		
@@ -316,7 +336,7 @@ class ConfigHandler extends DefaultHandler {
 			monat=4;
 		}else{
 			
-		if(s.contains("June")){
+		if(s.contains("June")|| s.contains("Juni")){
 			monat=5;
 		}else{
 			
@@ -375,14 +395,19 @@ class ConfigHandler extends DefaultHandler {
 				return datum;
 			}
 
+	
+	
 	public void endDocument() throws SAXException {
 
+		Map<String, Date> map = new TreeMap<String, Date>(mapzwei);
+		Map<String, Conf> mapfinal = new TreeMap<String, Conf>(finalmap);
+		
 		
 		try {
             PrintStream ps;
-            ps = new PrintStream(new File("MapZweiPrint.txt"));
+            ps = new PrintStream(new File("MapPrint.txt"));
 
-        for (Entry<String, Date> entry : mapzwei.entrySet()) {
+        for (Entry<String, Date> entry : map.entrySet()) {
             ps.println(entry.getKey() + " ;" + entry.getValue());       
          
             }ps.close(); 
@@ -394,9 +419,9 @@ class ConfigHandler extends DefaultHandler {
 		
 		try {
             PrintStream ps;
-            ps = new PrintStream(new File("FinalMapPrint.txt"));
+            ps = new PrintStream(new File("MapFinalPrint.txt"));
 
-        for (Entry<String, Conf> entry : finalmap.entrySet()) {
+        for (Entry<String, Conf> entry : mapfinal.entrySet()) {
             ps.println(entry.getKey() + "; "+ entry.getValue().getDate() +"; " + entry.getValue().getYear());       
          
             }ps.close(); 
@@ -408,17 +433,32 @@ class ConfigHandler extends DefaultHandler {
 		
         System.out.println("File printed.");
 
-		
+		datumFinal(map, mapfinal);
 		
 		System.out.println("Anzahl der Tags: " + counter);	
 		System.out.println("Anzahl der titelTags: " + titlecounter);
-		System.out.println(mapzwei.get("conf/mobihoc/2015mh"));
-		System.out.println("end");
 		System.out.println(mapzwei.size());
 		System.out.println("Laufzeit: " + time + "ms");
 		System.out.println("Titel ohne Monat"+ohneMonat);
-		System.out.println(mapzwei.get("conf/padl/2012"));
-		System.out.println(mapzwei.get("conf/its/2016"));
+		
+	}
+	public Date[] datumFinal(Map<String, Date> map, Map<String, Conf> mapfinal){
+		Date[] d= new Date[100];
+		int tmp = 0;
+		Map<String, Date> tmpmap = map;
+
+		for (Entry<String, Conf> entry : mapfinal.entrySet()) {
+			String finalmapkey =entry.getKey();
+			
+			for (Entry<String, Date> entry1 : tmpmap.entrySet()) {
+				if(entry1.getKey().contains(finalmapkey)){
+					d[tmp]=entry1.getValue();
+					tmp++;		
+				}else{
+					break;
+				}
+			}
+		}return d;
 	}
 
 	public void endPrefixMapping(String prefix) throws SAXException {
