@@ -1,4 +1,5 @@
 
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -39,7 +40,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 
-public class Maain {
+public class Main {
 
 	public static void main(String[] args) {
 		try {
@@ -50,11 +51,11 @@ public class Maain {
 			// ZipFile("http://dblp.uni-trier.de/xml/dblp.xml.gz");
 
 			// Pfad zur XML Datei
-			FileReader reader = new FileReader("/home/kiesant/Downloads/dblp.xml");
+			FileReader reader = new FileReader("/home/pet/dblp.xml");
 			InputSource inputSource = new InputSource(reader);
 
 			// DTD kann optional übergeben werden
-			inputSource.setSystemId("/home/kiesant/Downloads/dblp.dtd");
+			inputSource.setSystemId("/home/pet/dblp.dtd");
 
 			// PersonenContentHandler wird übergeben
 			xmlReader.setContentHandler(new ConfigHandler());
@@ -470,10 +471,12 @@ class ConfigHandler extends DefaultHandler {
 
 		int tmp = 0;
 		Map<String, Date> tmpmap = map;
-
+		Map<String, Date>tmpmap2=tmpmap;
 		for (Entry<String, Conf> entry : mapfinal.entrySet()) {
 			String finalmapkey = entry.getKey();
-
+			year.clear();
+			tmp=0;
+		//	tmpmap=tmpmap2;
 			for (Entry<String, Date> entry1 : tmpmap.entrySet()) {
 				if (entry1.getKey().contains(finalmapkey)) {		// TO-DO: Hier passiert nichts
 					if (tmp == 0) {
@@ -488,9 +491,15 @@ class ConfigHandler extends DefaultHandler {
 					}
 					tmp++;
 				} else {
+					if(year.isEmpty()){}
+				else{
 					break;
 				}
+				}
+				//tmpmap2.remove(entry1.getKey());
+
 			}
+
 			Date now = new Date();
 
 			if (((now.getYear()+1900) - (year.get(year.size()-1)+1900)) > 3) {	// +1900
@@ -507,28 +516,29 @@ class ConfigHandler extends DefaultHandler {
 
 				if (year.size() == 1) {
 					long sonderfall = 0;
-					sonderfall = now.getYear() - year.get(year.size());
+					sonderfall = now.getYear() - year.get(year.size()-1);
 					mapfinal.put(entry.getKey(),new Conf(new Date(),sonderfall));
 				} else {
 
-					if (year.size() <= 6) {
+					if (year.size() < 6) {
 						y = y + (6 - year.size());
 					}
-					for (int i = y; i >= 6; i++) {
-
-						if (year.get(year.size() - i) - year.get(year.size() - i + 1) == 1) {
+					for (int i=1; y < 6; i++,y++) {
+						System.out.println(year.size() - (i));
+						System.out.println(year.size() - (i+1));
+						if ((year.get(year.size() - (i)) - year.get(year.size() - (i+1))) == 1) {
 							counter1++;
 
 						} else {
-							if (year.get(year.size() - i) - year.get(year.size() - i + 1) == 2) {
+							if ((year.get(year.size() - (i)) - year.get(year.size() - (i+1) )) == 2) {
 								counter2++;
 							} else {
-								if (year.get(year.size() - i) - year.get(year.size() - i + 1) == 3) {
+								if ((year.get(year.size() - (i)) - year.get(year.size() - (i+1))) == 3) {
 									counter3++;
 								}
 							}
 						}
-
+							
 					}
 					if (counter1 > counter2 && counter1 > counter3) {
 						mapfinal.put(entry.getKey(),new Conf(new Date(),1));
