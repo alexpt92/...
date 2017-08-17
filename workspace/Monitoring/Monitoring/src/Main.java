@@ -1,5 +1,4 @@
 
-
 import java.io.File;
 import static java.lang.Math.toIntExact;
 
@@ -77,10 +76,10 @@ public class Main {
 class ConfigHandler extends DefaultHandler {
 	// Map<String, Date> mapeins = new HashMap<String, Date>();
 	Map<String, Date> mapzwei = new HashMap<String, Date>();
-	Map<String, Conf> finalmap = new HashMap<String, Conf>();
 	String aktuellerStream;
 	StringBuilder textContent = new StringBuilder();
-	
+	Map<String, Conf> finalmap = new HashMap<String, Conf>();
+
 	int ohneMonat = 0;
 	int counter;
 	int titlecounter;
@@ -117,8 +116,11 @@ class ConfigHandler extends DefaultHandler {
 				String key = atts.getValue("key");
 				aktuellerStream = key;
 				// System.out.print(aktuellerStream+" --> ");
+
 			}
+
 			if (Pattern.matches(("conf/.*"), aktuellerStream)) {
+
 				// System.out.print(aktuellerStream+" --> ");
 				// System.out.println(textContent.toString());
 				counter++;
@@ -127,13 +129,20 @@ class ConfigHandler extends DefaultHandler {
 				tmpa = aktuellerStream.split("/");
 				String tmp = tmpa[0] + "/" + tmpa[1] + "/";
 
-				Conf c = new Conf(new Date(), 0);
+				Conf c = new Conf(new Date(0,0,0), 0);
 
 				if (finalmap.isEmpty()) {
 					finalmap.put(tmp, c);
-				} else {if (!finalmap.containsKey(tmp)) {
-					finalmap.put(tmp, c);
-				}}insideStream = true;
+				} else {
+
+					if (!finalmap.containsKey(tmp)) {
+						finalmap.put(tmp, c);
+					}
+
+				}
+
+				insideStream = true;
+
 			}
 		}
 
@@ -142,6 +151,7 @@ class ConfigHandler extends DefaultHandler {
 			titlecounter++;
 
 		}
+
 	}
 
 	// Methode wird aufgerufen wenn der Parser zu einem End-Tag kommt
@@ -158,64 +168,92 @@ class ConfigHandler extends DefaultHandler {
 
 			if (aktuellerStream != null) {
 				if (text.contains("January")) {
-					// map = text.substring(text.indexOf(","));
-					mapzwei.put(aktuellerStream, toDate(text));
-				} else {if (text.contains("February")) {
-					// map = text.substring(text.indexOf("February"));
-					mapzwei.put(aktuellerStream, toDate(text));
-				} else {if (text.contains("March")) {
-					// map = text.substring(text.indexOf("March"));
-					mapzwei.put(aktuellerStream, toDate(text));
-				} else {if (text.contains("April")) {
-					// map = text.substring(text.indexOf("April"));
-					mapzwei.put(aktuellerStream, toDate(text));
-				} else {if (text.contains("May")) {
-					// map =
-					// text.substring(text.indexOf("May"));
-					mapzwei.put(aktuellerStream, toDate(text));
-				} else {if (text.contains("June")) {
-					// map =
-					// text.substring(text.indexOf("June"));
-					mapzwei.put(aktuellerStream, toDate(text));
-				} else {if (text.contains("Juni")) {
-					// map =
-					// text.substring(text.indexOf("Juni"));
-					mapzwei.put(aktuellerStream, toDate(text));
-				} else {if (text.contains("July")) {
-					// map =
-					// text.substring(text.indexOf("July"));
-					mapzwei.put(aktuellerStream, toDate(text));
-				} else {if (text.contains("August")) {
-					// map =
-					// text.substring(text.indexOf("August"));
-					mapzwei.put(aktuellerStream, toDate(text));
-				} else {if (text.contains("September")) {
-					// map =
-					// text.substring(text.indexOf("September"));
-					mapzwei.put(aktuellerStream, toDate(text));
-				} else {if (text.contains("October")) {
-					// map =
-					// text.substring(text.indexOf("October"));
-					mapzwei.put(aktuellerStream, toDate(text));
-				} else {if (text.contains("November")) {
-					// map =
-					// text.substring(text.indexOf("November"));
-					mapzwei.put(aktuellerStream, toDate(text));
-				} else {if (text.contains("December")) {
-					// map =
-					// text.substring(text.indexOf("December"));
-					mapzwei.put(aktuellerStream, toDate(text));			
-				} else {
-					ohneMonat++;
+					//String map = text.substring(text.indexOf("January"));
+					mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("January"))));
 
-					if (regexMatcher.find()) {
-						int jahr = Integer.parseInt(aktuellerStream.substring(regexMatcher.start(),regexMatcher.start() +4)); 4));
-						Date datum = new Date(jahr - 1900, 0, 15);
-						mapzwei.put(aktuellerStream, datum);
-					} else {
-						mapzwei.put(aktuellerStream, zero);
+				} else {if (text.contains("February")) {
+						// map = text.substring(text.indexOf("February"));
+						mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("February"))));
+					} else {if (text.contains("March")) {
+							// map = text.substring(text.indexOf("March"));
+							mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("March"))));
+						} else {if (text.contains("April")) {
+								// map = text.substring(text.indexOf("April"));
+								mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("April"))));
+							} else {if (text.contains("May")) {
+									// map =
+									// text.substring(text.indexOf("May"));
+									mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("May"))));
+								} else {if (text.contains("June")) {
+										// map =
+										// text.substring(text.indexOf("June"));
+										mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("June"))));
+									} else {if (text.contains("Juni")) {
+											// map =
+											// text.substring(text.indexOf("Juni"));
+											mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("Juni"))));
+										} else {if (text.contains("July")) {
+												// map =
+												// text.substring(text.indexOf("July"));
+												mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("July"))));
+											} else {if (text.contains("August")) {
+													// map =
+													// text.substring(text.indexOf("August"));
+													mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("August"))));
+												} else {
+													if (text.contains("September")) {
+														// map =
+														// text.substring(text.indexOf("September"));
+														mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("September"))));
+													} else {
+														if (text.contains("October")) {
+															// map =
+															// text.substring(text.indexOf("October"));
+															mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("October"))));
+														} else {
+															if (text.contains("November")) {
+																// map =
+																// text.substring(text.indexOf("November"));
+																mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("November"))));
+															} else {
+
+																if (text.contains("December")) {
+																	// map =
+																	// text.substring(text.indexOf("December"));
+
+																	mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("December"))));
+																	// es gehen
+																	// 1500
+																	// verloren
+																	// --> Kein
+																	// Monatsname?
+																} else {
+																	ohneMonat++;
+
+																	if (regexMatcher.find()) {
+																		int jahr = Integer.parseInt(aktuellerStream
+																				.substring(regexMatcher.start(),
+																						regexMatcher.start() + 4));
+																		Date datum = new Date(jahr - 1900, 0, 15);
+																		mapzwei.put(aktuellerStream, datum);
+																	} else {
+																		mapzwei.put(aktuellerStream, zero);
+																	}
+
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
 					}
-				}}}}}}}}}}}}}
+				}
+
 			}
 			// System.out.println(text);
 			textContent.delete(0, textContent.length());
@@ -233,6 +271,10 @@ class ConfigHandler extends DefaultHandler {
 
 	}
 
+	public void jahrabstand(Long[] y) {
+
+	}
+
 	public Date toDate(String s) {
 
 		int tag = 15;
@@ -244,6 +286,7 @@ class ConfigHandler extends DefaultHandler {
 		Matcher regexMatcher = regex.matcher(s);
 		Matcher daysMatcher = days.matcher(s);
 		Matcher onedayMatcher = oneday.matcher(s);
+		String m;
 		
 		// Berechnung des Monats
 		if (s.contains("January")) {
@@ -353,6 +396,7 @@ class ConfigHandler extends DefaultHandler {
 		for (Entry<String, Conf> entry : mapfinal.entrySet()) {
 			Date tmpDate = new Date();
 			String finalmapkey = entry.getKey();
+			
 			monthcounter.clear();
 			monthcounter.put("January", 0);
 			monthcounter.put("February", 0);
@@ -394,14 +438,61 @@ class ConfigHandler extends DefaultHandler {
 							monthcounter.get("July")>0 || monthcounter.get("August")>0 || monthcounter.get("September")>0 ||
 							monthcounter.get("October")>0 || monthcounter.get("November")>0 || monthcounter.get("December")>0)
 					{
-						if(quartal1>quartal2&&quartal1>quartal3&&quartal1>quartal4){
-						}
 						break;
 					}
 				}
 				tmpDate=entry1.getValue();
 			}
 				
+			}
+			if (entry.getValue().getYear()==0.5){
+				//TODO: berechnung des nächsten Datums mit Jahresabstand 0.5				
+				switch(entry.getValue().getDate().getMonth()){
+					case 0:
+						mapfinal.get(entry.getKey()).getDate().setMonth(6);
+						break;
+					case 1:
+						mapfinal.get(entry.getKey()).getDate().setMonth(7);
+						break;
+					case 2:
+						mapfinal.get(entry.getKey()).getDate().setMonth(8);
+						break;
+					case 3:
+						mapfinal.get(entry.getKey()).getDate().setMonth(9);
+						break;
+					case 4:
+						mapfinal.get(entry.getKey()).getDate().setMonth(10);
+						break;
+					case 5:
+						mapfinal.get(entry.getKey()).getDate().setMonth(11);
+						break;
+					case 6:
+						mapfinal.get(entry.getKey()).getDate().setMonth(0);
+						mapfinal.get(entry.getKey()).getDate().setYear(entry.getValue().getDate().getYear()+1);
+						break;
+					case 7:
+						mapfinal.get(entry.getKey()).getDate().setMonth(1);
+						mapfinal.get(entry.getKey()).getDate().setYear(entry.getValue().getDate().getYear()+1);
+						break;
+					case 8:
+						mapfinal.get(entry.getKey()).getDate().setMonth(2);
+						mapfinal.get(entry.getKey()).getDate().setYear(entry.getValue().getDate().getYear()+1);
+						break;
+					case 9:
+						mapfinal.get(entry.getKey()).getDate().setMonth(3);
+						mapfinal.get(entry.getKey()).getDate().setYear(entry.getValue().getDate().getYear()+1);
+						break;
+					case 10:
+						mapfinal.get(entry.getKey()).getDate().setMonth(4);
+						mapfinal.get(entry.getKey()).getDate().setYear(entry.getValue().getDate().getYear()+1);
+						break;
+					case 11:
+						mapfinal.get(entry.getKey()).getDate().setMonth(5);
+						mapfinal.get(entry.getKey()).getDate().setYear(entry.getValue().getDate().getYear()+1);
+						break;
+				}							
+			}else{//berechnung des nächsten Datums der Konferenz 
+				mapfinal.get(entry.getKey()).getDate().setMonth(tmpDate.getMonth());
 			}
 		}
 	
@@ -476,8 +567,8 @@ class ConfigHandler extends DefaultHandler {
 			Date now = new Date();
 
 			if (((now.getYear() + 1900) - (year.get(year.size() - 1) + 1900)) > 3) { // +1900
-
-
+				//3 Jahre nicht mehr stattgefunden
+					
 				mapfinal.put(entry.getKey(), new Conf(new Date(), -1)); // !!
 			} else {
 				int counter1 = 0;
@@ -487,7 +578,8 @@ class ConfigHandler extends DefaultHandler {
 				int y = 1;
 
 				if (year.size() == 1) {
-					double sonderfall = -2;
+			//Konferenz erst ein mal stattgefunden, evtl Ausgabe mit Benachrichtigung
+					double sonderfall = -2;		
 					mapfinal.put(entry.getKey(), new Conf(new Date(), sonderfall));
 				} else {
 
@@ -519,20 +611,25 @@ class ConfigHandler extends DefaultHandler {
 					if (counter1 > counter2 && counter1 > counter3 && counter1 > counter05
 							|| counter1 == counter2 && counter1 > counter3 && counter1 > counter05
 							|| counter1 == counter3 && counter1 > counter05 && counter1 > counter2) {
-						mapfinal.put(entry.getKey(), new Conf(new Date(toIntExact((year.get(year.size()-1))+1),0,0), 1));
+						//Jahresabstand 1 -> Letztes Veranstaltungsjahr +1
+						mapfinal.get(entry.getKey()).getDate().setYear(toIntExact(year.get(year.size()-1)+1));
+						mapfinal.get(entry.getKey()).setYear(1);
 					} else {
 						if (counter2 > counter1 && counter2 > counter3 && counter2 > counter05
 								|| counter2 == counter3 && counter2 > counter05) {
-							mapfinal.put(entry.getKey(), new Conf(new Date(toIntExact((year.get(year.size()-1))+2),0,0), 2));
+							//Jahresabstand 2 -> Letztes Veranstaltungsjahr +2
+							mapfinal.get(entry.getKey()).getDate().setYear(toIntExact(year.get(year.size()-1)+2));
+							mapfinal.get(entry.getKey()).setYear(2);
 						} else {
-							if (counter3 > counter2 && counter3 > counter1 && counter3 > counter05) {
-								mapfinal.put(entry.getKey(), new Conf(new Date(toIntExact(year.get(year.size()-1)+3),0,0), 3));
-
+							if (counter3 > counter2 && counter3 > counter1 && counter3 > counter05) {								
+								//Jahresabstand 3 -> Letztes Veranstaltungsjahr +3
+								mapfinal.get(entry.getKey()).getDate().setYear(toIntExact(year.get(year.size()-1)+3));
+								mapfinal.get(entry.getKey()).setYear(3);
 							} else {
 								if (counter05 > counter1 && counter05 > counter2 && counter05 > counter3
 										|| counter05 == counter1 || counter05 == counter2 || counter05 == counter3) {
-									mapfinal.put(entry.getKey(), new Conf(new Date(toIntExact(year.get(year.size()-1)),0,0), 0.5));
-
+									mapfinal.get(entry.getKey()).setYear(0.5);
+									//TODO: Jahresabstand 0.5 -> + 6 Monate???
 								}
 							}
 						}
