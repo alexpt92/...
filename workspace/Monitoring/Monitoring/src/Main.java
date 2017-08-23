@@ -1,6 +1,6 @@
 
 import java.io.File;
-import static java.lang.Math.toIntExact;
+//import static java.lang.Math.toIntExact;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -52,11 +52,11 @@ public class Main {
 			// ZipFile("http://dblp.uni-trier.de/xml/dblp.xml.gz");
 
 			// Pfad zur XML Datei
-			FileReader reader = new FileReader("/home/pet/dblp.xml");
+			FileReader reader = new FileReader("/home/alex/dblp.xml");
 			InputSource inputSource = new InputSource(reader);
 
 			// DTD kann optional übergeben werden
-			inputSource.setSystemId("/home/pet/dblp.dtd");
+			inputSource.setSystemId("/home/alex/dblp.dtd");
 
 			// PersonenContentHandler wird übergeben
 			xmlReader.setContentHandler(new ConfigHandler());
@@ -501,20 +501,17 @@ class ConfigHandler extends DefaultHandler {
 	}
 		/*	int tmp = 0;
 		Map<String, Date> tmpmap = map;
-
 		for (Entry<String, Conf> entry : mapfinal.entrySet()) {
 			String finalmapkey = entry.getKey();
 			// erstellen eines Arrays für einen Eintrag in mapfinal
 			for (Entry<String, Date> entry1 : tmpmap.entrySet()) {
 				if (entry1.getKey().contains(finalmapkey)) {
 					d[tmp] = entry1.getValue();
-
 					tmp++;
 				} else {
 					break;
 				}
 			}
-
 		}*/
 	
 
@@ -612,18 +609,18 @@ class ConfigHandler extends DefaultHandler {
 							|| counter1 == counter2 && counter1 > counter3 && counter1 > counter05
 							|| counter1 == counter3 && counter1 > counter05 && counter1 > counter2) {
 						//Jahresabstand 1 -> Letztes Veranstaltungsjahr +1
-						mapfinal.get(entry.getKey()).getDate().setYear(toIntExact(year.get(year.size()-1)+1));
+						mapfinal.get(entry.getKey()).getDate().setYear((int)(year.get(year.size()-1)+1));
 						mapfinal.get(entry.getKey()).setYear(1);
 					} else {
 						if (counter2 > counter1 && counter2 > counter3 && counter2 > counter05
 								|| counter2 == counter3 && counter2 > counter05) {
 							//Jahresabstand 2 -> Letztes Veranstaltungsjahr +2
-							mapfinal.get(entry.getKey()).getDate().setYear(toIntExact(year.get(year.size()-1)+2));
+							mapfinal.get(entry.getKey()).getDate().setYear(/*toIntExact*/(int)(year.get(year.size()-1)+2));
 							mapfinal.get(entry.getKey()).setYear(2);
 						} else {
 							if (counter3 > counter2 && counter3 > counter1 && counter3 > counter05) {								
 								//Jahresabstand 3 -> Letztes Veranstaltungsjahr +3
-								mapfinal.get(entry.getKey()).getDate().setYear(toIntExact(year.get(year.size()-1)+3));
+								mapfinal.get(entry.getKey()).getDate().setYear((int)(year.get(year.size()-1)+3));
 								mapfinal.get(entry.getKey()).setYear(3);
 							} else {
 								if (counter05 > counter1 && counter05 > counter2 && counter05 > counter3
