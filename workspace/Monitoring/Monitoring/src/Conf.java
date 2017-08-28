@@ -5,6 +5,7 @@ public class Conf {
 
 	double year;
 	Date date;
+	Date customdate;
 	
 	
 	Conf(Date date, double year){
@@ -12,7 +13,13 @@ public class Conf {
 		this.year=year;
 	}
 	
+	public Date getCustomdate() {
+		return this.customdate;
+	}
 	
+	public void setCustomdate(Date d) {
+		this.customdate=d;
+	}
 	public double getYear(){
 		return this.year;
 	
