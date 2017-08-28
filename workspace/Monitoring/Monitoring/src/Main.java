@@ -52,11 +52,11 @@ public class Main {
 			// ZipFile("http://dblp.uni-trier.de/xml/dblp.xml.gz");
 
 			// Pfad zur XML Datei
-			FileReader reader = new FileReader("/home/alex/dblp.xml");
+			FileReader reader = new FileReader("C:\\Users\\Timo\\Desktop\\Studienprojekt\\dblp.xml");
 			InputSource inputSource = new InputSource(reader);
 
 			// DTD kann optional übergeben werden
-			inputSource.setSystemId("/home/alex/dblp.dtd");
+			inputSource.setSystemId("C:\\Users\\Timo\\Desktop\\Studienprojekt\\dblp.dtd");
 
 			// PersonenContentHandler wird übergeben
 			xmlReader.setContentHandler(new ConfigHandler());
@@ -79,6 +79,8 @@ class ConfigHandler extends DefaultHandler {
 	String aktuellerStream;
 	StringBuilder textContent = new StringBuilder();
 	Map<String, Conf> finalmap = new HashMap<String, Conf>();
+	Map<String,Conf> outdated = new HashMap<String,Conf>();
+	Map<String, Date> customdate= new HashMap<String, Date>();
 
 	int ohneMonat = 0;
 	int counter;
@@ -133,10 +135,12 @@ class ConfigHandler extends DefaultHandler {
 
 				if (finalmap.isEmpty()) {
 					finalmap.put(tmp, c);
+					customdate.put(tmp, c.getDate()); //TODO: einheitsdatum zum vergleich später ob customdate da ist
 				} else {
 
 					if (!finalmap.containsKey(tmp)) {
 						finalmap.put(tmp, c);
+						customdate.put(tmp, c.getDate());
 					}
 
 				}
@@ -346,15 +350,46 @@ class ConfigHandler extends DefaultHandler {
 
 		Map<String, Date> map = new TreeMap<String, Date>(mapzwei);
 		Map<String, Conf> mapfinal = new TreeMap<String, Conf>(finalmap);
+		
 
 		yearFinal(map, mapfinal);
 		datumFinal(map, mapfinal);
+		Map<String, Date> customfinal = new TreeMap<String, Date>(customdate);
+		Map<String, Conf> outdatedfinal = new TreeMap<String, Conf>(outdated);
+		
 		try {
 			PrintStream ps;
 			ps = new PrintStream(new File("MapPrint.txt"));
 
 			for (Entry<String, Date> entry : map.entrySet()) {
 				ps.println(entry.getKey() + " ;" + entry.getValue());
+
+			}
+			ps.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		try {
+			PrintStream ps;
+			ps = new PrintStream(new File("Customdate.txt"));
+
+			for (Entry<String, Date> entry : customfinal.entrySet()) {
+				ps.println(entry.getKey() + " ;" + entry.getValue());
+
+			}
+			ps.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			PrintStream ps;
+			ps = new PrintStream(new File("Outdated.txt"));
+
+			for (Entry<String, Conf> entry : outdatedfinal.entrySet()) {
+				ps.println(entry.getKey() + " ;" + entry.getValue().getDate() + " ;" + entry.getValue().getYear());
 
 			}
 			ps.close();
@@ -560,13 +595,22 @@ class ConfigHandler extends DefaultHandler {
 				tmpDate = entry1.getValue();
 
 			}
+			
+			double maximum=0;
 
 			Date now = new Date();
+			
+			for(int i=0;i<=year.size()-1;i++) {
+				if(year.get(i)> maximum) {
+					maximum=year.get(i);
+				}
+			}
 
-			if (((now.getYear() + 1900) - (year.get(year.size() - 1) + 1900)) > 3) { // +1900
+			if (((now.getYear() + 1900) - (maximum+1900)) > 3) { // +1900
 				//3 Jahre nicht mehr stattgefunden
 					
-				mapfinal.put(entry.getKey(), new Conf(new Date(), -1)); // !!
+				mapfinal.put(entry.getKey(), new Conf(new Date(), -1));// !!
+				outdated.put(entry.getKey(), new Conf(new Date(), -1));
 			} else {
 				int counter1 = 0;
 				int counter2 = 0;
@@ -584,8 +628,8 @@ class ConfigHandler extends DefaultHandler {
 						y = y + (6 - year.size());
 					}
 					for (int i = 1; y < 6; i++, y++) {
-						System.out.println(year.size() - (i));
-						System.out.println(year.size() - (i + 1));
+						//System.out.println(year.size() - (i));
+						//System.out.println(year.size() - (i + 1));
 						if ((year.get(year.size() - (i)) - year.get(year.size() - (i + 1))) == 1) {
 							counter1++;
 
