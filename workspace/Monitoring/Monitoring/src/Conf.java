@@ -5,7 +5,7 @@ public class Conf {
 
 	double year;
 	Date date;
-	Date customdate;
+	Date customdate=new Date(1,1,2000);
 	
 	
 	Conf(Date date, double year){
@@ -17,9 +17,7 @@ public class Conf {
 		return this.customdate;
 	}
 	
-	public void setCustomdate(Date d) {
-		this.customdate=d;
-	}
+	
 	public double getYear(){
 		return this.year;
 	
@@ -35,4 +33,8 @@ public class Conf {
 	public void setDate(Date d){
 		this.date=d;
 	}
+	public void setCustomdate(int d, int m,int y) {
+		this.customdate=new Date(d,m,y+1900);
+	}
 }
+
