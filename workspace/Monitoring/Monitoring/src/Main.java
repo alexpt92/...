@@ -1,3 +1,4 @@
+import java.io.BufferedReader;
 import java.io.File;
 //import static java.lang.Math.toIntExact;
 
@@ -24,6 +25,7 @@ import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipFile;
 
+import javax.swing.JOptionPane;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -40,7 +42,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 
-public class Main {
+public class Maain {
 
 	public static void main(String[] args) {
 		try {
@@ -51,11 +53,11 @@ public class Main {
 			// ZipFile("http://dblp.uni-trier.de/xml/dblp.xml.gz");
 
 			// Pfad zur XML Datei
-			FileReader reader = new FileReader("H:/SelfWorkspace/dblp.xml");
+			FileReader reader = new FileReader("/home/kiesant/Downloads/dblp.xml");
 			InputSource inputSource = new InputSource(reader);
 
 			// DTD kann optional übergeben werden
-			inputSource.setSystemId("H:/SelfWorkspace/dblp.dtd");
+			inputSource.setSystemId("/home/kiesant/Downloads/dblp.dtd");
 
 			// PersonenContentHandler wird übergeben
 			xmlReader.setContentHandler(new ConfigHandler());
@@ -80,6 +82,25 @@ class ConfigHandler extends DefaultHandler {
 	Map<String, Conf> finalmap = new HashMap<String, Conf>();
 	Map<String, Conf> outdated = new HashMap<String, Conf>();
 	Map<String, Date> customdate = new HashMap<String, Date>();
+	
+	public void customLoad() throws ParseException{
+		BufferedReader bf;
+		String line;
+		
+		try{
+			bf = new BufferedReader(new FileReader("/home/kiesant/workspace/StudienProjekt_Parser/Customdate.txt"));
+			
+			while((line=bf.readLine())!= null){
+				String[] a=line.split(";");
+				DateFormat format = new SimpleDateFormat("E M d h:m:s z y");
+				Date date= format.parse(a[1]);
+				customdate.put(a[0],date );
+			}
+	
+		}catch(IOException e){
+		
+		}
+	}
 
 	int ohneMonat = 0;
 	int counter;
@@ -319,7 +340,21 @@ class ConfigHandler extends DefaultHandler {
 
 		Map<String, Date> customfinal = new TreeMap<String, Date>(customdate);
 		Map<String, Conf> outdatedfinal = new TreeMap<String, Conf>(outdated);
+		
+		String t="";
+		
+		
+		
+		t = JOptionPane.showInputDialog("Bitte Kürzel der Conference eingeben");
 
+		int d =Integer.parseInt(JOptionPane.showInputDialog("Bitte Tag eingeben"));
+		int m =Integer.parseInt(JOptionPane.showInputDialog("Bitte Monat eingeben"));
+		int y= Integer.parseInt(JOptionPane.showInputDialog("Bitte Jahr eingeben"));
+
+		createCustom(t,d,m,y);
+		
+		
+		
 		try {
 			PrintStream ps;
 			ps = new PrintStream(new File("MapPrint.txt"));
@@ -334,22 +369,21 @@ class ConfigHandler extends DefaultHandler {
 			e.printStackTrace();
 		}
 
-		File Customdate = new File("Customdate.txt");
-		if (!Customdate.exists()) {
-			try {
-				PrintStream ps;
-				ps = new PrintStream(new File("Customdate.txt"));
-
-				for (Entry<String, Date> entry : customfinal.entrySet()) {
-					ps.println(entry.getKey() + " ;" + entry.getValue());
-				}
+		
+	
+		try {
+			PrintStream ps;
+			ps = new PrintStream(new File("Customdate.txt"));
+			
+			for (Entry<String, Date> entry : customfinal.entrySet()) {
+				ps.println(entry.getKey() + " ;" + entry.getValue());
+			}
 				ps.close();
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
-		} else {
 		}
+		 
 
 		try {
 			PrintStream ps;
@@ -362,7 +396,7 @@ class ConfigHandler extends DefaultHandler {
 			}
 			ps.close();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+			// TODO Auto-generated catch blockH:/SelfWorkspace
 			e.printStackTrace();
 		}
 
@@ -395,6 +429,16 @@ class ConfigHandler extends DefaultHandler {
 
 	}
 
+	public void createCustom(String s,int a,int b, int c){
+		for (Entry<String, Date> entry : customdate.entrySet()) {
+			if(entry.getKey().equals(s)){
+				Date tmp = new Date(a,b,c);
+				entry.setValue(tmp);
+			}
+		}
+	}
+	
+	
 	public void createCustomFinal(Map<String, Conf> mapfinal) {
 		for (Entry<String, Conf> entry : mapfinal.entrySet()) {
 			customdate.put(entry.getKey(), entry.getValue().getCustomdate());
