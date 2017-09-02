@@ -42,7 +42,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 
-public class Maain {
+public class Main {
 
 	public static void main(String[] args) {
 		try {
@@ -53,11 +53,11 @@ public class Maain {
 			// ZipFile("http://dblp.uni-trier.de/xml/dblp.xml.gz");
 
 			// Pfad zur XML Datei
-			FileReader reader = new FileReader("/home/kiesant/Downloads/dblp.xml");
+			FileReader reader = new FileReader("/home/mack/dblp.xml");
 			InputSource inputSource = new InputSource(reader);
 
 			// DTD kann optional übergeben werden
-			inputSource.setSystemId("/home/kiesant/Downloads/dblp.dtd");
+			inputSource.setSystemId("/home/mack/dblp.dtd");
 
 			// PersonenContentHandler wird übergeben
 			xmlReader.setContentHandler(new ConfigHandler());
@@ -82,13 +82,14 @@ class ConfigHandler extends DefaultHandler {
 	Map<String, Conf> finalmap = new HashMap<String, Conf>();
 	Map<String, Conf> outdated = new HashMap<String, Conf>();
 	Map<String, Date> customdate = new HashMap<String, Date>();
-	
+	Map<String, Conf> alertMap = new HashMap<String, Conf>(); //enthält alle Konferenzen mit ALERT
+	//Customdate.txt auslesen
 	public void customLoad() throws ParseException{
 		BufferedReader bf;
 		String line;
 		
 		try{
-			bf = new BufferedReader(new FileReader("/home/kiesant/workspace/StudienProjekt_Parser/Customdate.txt"));
+			bf = new BufferedReader(new FileReader("/home/mack/workspace/Flaggen/Monitoring/Customdate.txt"));
 			
 			while((line=bf.readLine())!= null){
 				String[] a=line.split(";");
@@ -96,10 +97,10 @@ class ConfigHandler extends DefaultHandler {
 				Date date= format.parse(a[1]);
 				customdate.put(a[0],date );
 			}
-	
+			bf.close();		
 		}catch(IOException e){
 		
-		}
+		}	
 	}
 
 	int ohneMonat = 0;
@@ -338,8 +339,7 @@ class ConfigHandler extends DefaultHandler {
 		datumFinal(map, mapfinal);
 		createCustomFinal(mapfinal);
 
-		Map<String, Date> customfinal = new TreeMap<String, Date>(customdate);
-		Map<String, Conf> outdatedfinal = new TreeMap<String, Conf>(outdated);
+		
 		
 		String t="";
 		
@@ -347,13 +347,14 @@ class ConfigHandler extends DefaultHandler {
 		
 		t = JOptionPane.showInputDialog("Bitte Kürzel der Conference eingeben");
 
-		int d =Integer.parseInt(JOptionPane.showInputDialog("Bitte Tag eingeben"));
-		int m =Integer.parseInt(JOptionPane.showInputDialog("Bitte Monat eingeben"));
-		int y= Integer.parseInt(JOptionPane.showInputDialog("Bitte Jahr eingeben"));
+		long d =Integer.parseInt(JOptionPane.showInputDialog("Bitte Tag eingeben"));
+		long m =Integer.parseInt(JOptionPane.showInputDialog("Bitte Monat eingeben"));
+		long y= Integer.parseInt(JOptionPane.showInputDialog("Bitte Jahr eingeben"));
 
 		createCustom(t,d,m,y);
 		
-		
+		Map<String, Date> customfinal = new TreeMap<String, Date>(customdate);
+		Map<String, Conf> outdatedfinal = new TreeMap<String, Conf>(outdated);
 		
 		try {
 			PrintStream ps;
@@ -429,10 +430,10 @@ class ConfigHandler extends DefaultHandler {
 
 	}
 
-	public void createCustom(String s,int a,int b, int c){
+	public void createCustom(String s,long a,long b, long c){
 		for (Entry<String, Date> entry : customdate.entrySet()) {
 			if(entry.getKey().equals(s)){
-				Date tmp = new Date(a,b,c);
+				Date tmp = new Date((int)a,(int)b,(int)c);
 				entry.setValue(tmp);
 			}
 		}
@@ -618,14 +619,15 @@ class ConfigHandler extends DefaultHandler {
 
 		int tmp = 0;
 		Map<String, Date> tmpmap = map;
-		Map<String, Date> tmpmap2 = tmpmap;
+		Map<String, Conf> tmpmapfinal = new TreeMap();
+		tmpmapfinal.putAll(mapfinal);
 		Date tmpDate = new Date();
 
-		for (Entry<String, Conf> entry : mapfinal.entrySet()) {
+		for (Entry<String, Conf> entry : tmpmapfinal.entrySet()) {
 			String finalmapkey = entry.getKey();
 			year.clear();
 			tmp = 0;
-			// tmpmap=tmpmap2;
+			// tmpmap=tmpmapfinal;
 
 			for (Entry<String, Date> entry1 : tmpmap.entrySet()) {
 				if (entry1.getKey().contains(finalmapkey)) {
@@ -633,7 +635,6 @@ class ConfigHandler extends DefaultHandler {
 					// TO-DO: Hier passiert nichts
 					if (tmp == 0) {
 						year.add((long) entry1.getValue().getYear());
-
 					} else {
 						if (entry1.getValue().equals(tmpDate)) {
 						} else {
@@ -651,7 +652,7 @@ class ConfigHandler extends DefaultHandler {
 					}
 
 				}
-				// tmpmap2.remove(entry1.getKey());
+				// tmpmapfinal.remove(entry1.getKey());
 				tmpDate = entry1.getValue();
 
 			}
@@ -668,9 +669,9 @@ class ConfigHandler extends DefaultHandler {
 
 			if (((now.getYear() + 1900) - (maximum + 1900)) > 3) { // +1900
 				// 3 Jahre nicht mehr stattgefunden
-
-				mapfinal.put(entry.getKey(), new Conf(new Date(), -1));// !!
-				outdated.put(entry.getKey(), new Conf(new Date(), -1));
+				mapfinal.remove(entry.getKey());
+				//mapfinal.put(entry.getKey(), new Conf(new Date(), -1));// !!
+				outdated.put(entry.getKey(), new Conf(tmpDate, -1));
 			} else {
 				int counter1 = 0;
 				int counter2 = 0;
@@ -682,40 +683,27 @@ class ConfigHandler extends DefaultHandler {
 					// Konferenz erst ein mal stattgefunden, evtl Ausgabe mit
 					// Benachrichtigung
 					double sonderfall = -2;
-					mapfinal.put(entry.getKey(), new Conf(new Date(),
-							sonderfall));
-				} else {
-
-					if (year.size() < 6) {
+					mapfinal.put(entry.getKey(), new Conf(new Date(),sonderfall));
+				} else {if (year.size() < 6) {
 						y = y + (6 - year.size());
-					}
-					for (int i = 1; y < 6; i++, y++) {
-						// System.out.println(year.size() - (i));
-						// System.out.println(year.size() - (i + 1));
-						if ((year.get(year.size() - (i)) - year.get(year.size()
-								- (i + 1))) == 1) {
-							counter1++;
-
-						} else {
-							if ((year.get(year.size() - (i)) - year.get(year
-									.size() - (i + 1))) == 2) {
-								counter2++;
-							} else {
-								if ((year.get(year.size() - (i)) - year
-										.get(year.size() - (i + 1))) == 3) {
-									counter3++;
-								} else {
-									if ((year.get(year.size() - (i)) - year
-											.get(year.size() - (i + 1))) == 0) {
-
-										counter05++;
-									}
-								}
-							}
-						}
+				}
+				
+				for (int i = 1; y < 6; i++, y++) {
+					// System.out.println(year.size() - (i));
+					// System.out.println(year.size() - (i + 1));
+					if ((year.get(year.size() - (i)) - year.get(year.size()- (i + 1))) == 1) {
+						counter1++;
+					} else {if ((year.get(year.size() - (i)) - year.get(year.size() - (i + 1))) == 2) {
+						counter2++;
+					} else {if ((year.get(year.size() - (i)) - year.get(year.size() - (i + 1))) == 3) {
+						counter3++;
+					} else {if ((year.get(year.size() - (i)) - year.get(year.size() - (i + 1))) == 0) {
+						counter05++;
+					}}}}
 
 					}
-					if (counter1 > counter2 && counter1 > counter3
+				
+				if (counter1 > counter2 && counter1 > counter3
 							&& counter1 > counter05 || counter1 == counter2
 							&& counter1 > counter3 && counter1 > counter05
 							|| counter1 == counter3 && counter1 > counter05
