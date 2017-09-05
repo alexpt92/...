@@ -1,48 +1,19 @@
-import java.io.BufferedReader;
-import java.io.File;
-//import static java.lang.Math.toIntExact;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map.Entry;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipFile;
-
-import javax.jws.soap.InitParam;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 public class Main {
 
@@ -55,11 +26,11 @@ public class Main {
 			// ZipFile("http://dblp.uni-trier.de/xml/dblp.xml.gz");
 
 			// Pfad zur XML Datei
-			FileReader reader = new FileReader("/home/kiesant/Downloads/dblp(1).xml");
+			FileReader reader = new FileReader("/home/mack/dblp.xml");
 			InputSource inputSource = new InputSource(reader);
 
 			// DTD kann optional übergeben werden
-			inputSource.setSystemId("/home/kiesant/Downloads/dblp.dtd");
+			inputSource.setSystemId("/home/mack/dblp.dtd");
 
 			// PersonenContentHandler wird übergeben
 			xmlReader.setContentHandler(new ConfigHandler());
@@ -74,14 +45,30 @@ public class Main {
 			e.printStackTrace();
 		}
 		
-		/*JFrame frame = new JFrame("Controlling");
+		JFrame frame = new JFrame("Controlling");
 		frame.setVisible(true);
 		frame.setSize(500,200);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		JPanel panel = new JPanel();
+		JTextField upcoming=new JTextField("Upcoming:", 10);
+		JTextField todo=new JTextField("TODO:", 10);
+		JButton button = new JButton("Change Customdate");
 		
-		GUI gui = new GUI();
-		frame.add(gui);
-		*/
+		panel.setLayout(new BorderLayout());
+		panel.add(upcoming, BorderLayout.CENTER);
+		panel.add(todo, BorderLayout.SOUTH);
+		panel.add(button, BorderLayout.EAST);
+
+		button.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//ConfigHandler.this.changeCustom();
+				
+			}
+		});
+		
 		
 		
 	}
