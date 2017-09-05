@@ -1,11 +1,10 @@
-
 import java.util.Date;
 
 public class Conf {
 
 	double year;
 	Date date;
-	Date customdate=new Date(1,1,2000);
+	Date customdate=new Date(100,11,24);
 	
 	
 	Conf(Date date, double year){
@@ -37,4 +36,3 @@ public class Conf {
 		this.customdate=new Date(d,m,y+1900);
 	}
 }
-
