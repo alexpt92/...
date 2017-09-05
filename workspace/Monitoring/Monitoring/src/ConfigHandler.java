@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
@@ -26,15 +27,15 @@ import org.xml.sax.helpers.DefaultHandler;
 
 class ConfigHandler extends DefaultHandler {
 	// Map<String, Date> mapeins = new HashMap<String, Date>();
-	Map<String, Date> mapzwei = new HashMap<String, Date>();
 	String aktuellerStream;
 	StringBuilder textContent = new StringBuilder();
+	Map<String, Date> mapzwei = new HashMap<String, Date>();
 	Map<String, Conf> finalmap = new HashMap<String, Conf>();
 	Map<String, Conf> outdated = new HashMap<String, Conf>();
 	Map<String, Date> customdate = new HashMap<String, Date>();
-	Map<String, Conf> alertMap = new HashMap<String, Conf>(); //enthält alle Konferenzen mit ALERT
-	//Customdate.txt auslesen
-
+	Map<String, Conf> TODOMap = new HashMap<String, Conf>(); //enthält alle Konferenzen mit ALERT
+	Map<String, Conf> upcomingMap = new HashMap<String, Conf>();
+	
 	int ohneMonat = 0;
 	int counter;
 	int titlecounter;
@@ -263,13 +264,11 @@ class ConfigHandler extends DefaultHandler {
 	}
 
 	public void endDocument() throws SAXException {
-		File f = new File("/home/kiesant/workspace/StudienProjekt_Parser/Customdate.txt");
+		File f = new File("/home/mack/workspace/Flaggen/Monitoring/Customdate.txt");
 		
 		Map<String, Date> map = new TreeMap<String, Date>(mapzwei);
 		Map<String, Conf> mapfinal = new TreeMap<String, Conf>(finalmap);
-
-		yearFinal(map, mapfinal);
-		datumFinal(map, mapfinal);
+		
 		if(f.exists()){
 			try {
 				readCustomDate();
@@ -280,11 +279,15 @@ class ConfigHandler extends DefaultHandler {
 		}else{
 			createCustomFinal(mapfinal);
 		}
-		changeCustom();
-		changeCustom();
+		//changeCustom();//änderung direkt übernehmen
+		yearFinal(map, mapfinal);
+		datumFinal(map, mapfinal);
+		//changeCustom();//änderung nach nächstem durchlauf übernehmen?
 		
-		Map<String, Date> customfinal = new TreeMap<String, Date>(customdate);
 		Map<String, Conf> outdatedfinal = new TreeMap<String, Conf>(outdated);
+		Map<String, Date> customfinal = new TreeMap<String, Date>(customdate);
+		
+		//changeCustom();
 		
 		try {
 			PrintStream ps;
@@ -301,11 +304,11 @@ class ConfigHandler extends DefaultHandler {
 		}
 
 		
-	
+
 		try {
 			PrintStream ps;
 			ps = new PrintStream(new File("Customdate.txt"));
-			
+				
 			for (Entry<String, Date> entry : customfinal.entrySet()) {
 				ps.println(entry.getKey() + " ;" + entry.getValue());
 			}
@@ -314,6 +317,7 @@ class ConfigHandler extends DefaultHandler {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 		}
+		
 		 
 
 		try {
@@ -366,12 +370,12 @@ class ConfigHandler extends DefaultHandler {
 		t ="conf/"+ JOptionPane.showInputDialog("Bitte Kürzel der Conference eingeben" )+"/";
 		
 		int d =Integer.parseInt(JOptionPane.showInputDialog("Bitte Tag eingeben (1-31)"));
-		int m =Integer.parseInt(JOptionPane.showInputDialog("Bitte Monat eingeben (0-11)"));
+		int m =Integer.parseInt(JOptionPane.showInputDialog("Bitte Monat eingeben (1-12)"));
 		int y= Integer.parseInt(JOptionPane.showInputDialog("Bitte Jahr eingeben"));
 		
 		for (Entry<String, Date> entry : customdate.entrySet()) {
 			if(entry.getKey().equals(t)){
-				Date tmp = new Date(y-1900,m,d);
+				Date tmp = new Date(y-1900,m-1,d);
 				entry.setValue(tmp);
 			}
 		}
@@ -391,10 +395,10 @@ class ConfigHandler extends DefaultHandler {
 		String line;
 		
 		try{
-			bf=new BufferedReader(new FileReader(""));
+			bf=new BufferedReader(new FileReader("/home/mack/workspace/Flaggen/Monitoring/Customdate.txt"));
 			while((line=bf.readLine())!=null){
 				String[] a = line.split(" ;");
-				DateFormat format = new SimpleDateFormat("E M d h:m:s z y");
+				DateFormat format = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
 				Date date= format.parse(a[1]);
 				customdate.put(a[0],date);
 			}
@@ -410,9 +414,6 @@ class ConfigHandler extends DefaultHandler {
 		System.out.println("Berechne Monate.");
 		Map<String, Date> tmpmap = map;
 	//	Map<String, Integer> monthcounter = new HashMap<String, Integer>();
-		
-		
-			
 			
 		for (Entry<String, Conf> entry : mapfinal.entrySet()) {
 			Date tmpDate = new Date();
@@ -433,71 +434,71 @@ class ConfigHandler extends DefaultHandler {
 					}
 				}
 			}
-			if(customdate.get(entry.getKey())!=new Date(100,11,24)){
-				mapfinal.get(entry.getKey()).setDate(customdate.get(entry.getKey()));
+			if(customdate.get(entry.getKey()).equals(new Date(100,11,24))){
+				if (entry.getValue().getYear() == 0.5) {
+					// TODO: berechnung des nächsten Datums mit Jahresabstand 0.5
+						switch (tmpDate.getMonth()) {
+							case 0:
+								mapfinal.get(entry.getKey()).setDate(tmpDate);
+								mapfinal.get(entry.getKey()).getDate().setMonth(6);;
+								break;
+							case 1:
+								mapfinal.get(entry.getKey()).setDate(tmpDate);
+								mapfinal.get(entry.getKey()).getDate().setMonth(7);
+								break;
+							case 2:
+								mapfinal.get(entry.getKey()).setDate(tmpDate);
+								mapfinal.get(entry.getKey()).getDate().setMonth(8);
+								break;
+							case 3:
+								mapfinal.get(entry.getKey()).setDate(tmpDate);
+								mapfinal.get(entry.getKey()).getDate().setMonth(9);
+								break;
+							case 4:
+								mapfinal.get(entry.getKey()).setDate(tmpDate);
+								mapfinal.get(entry.getKey()).getDate().setMonth(10);
+								break;
+							case 5:
+								mapfinal.get(entry.getKey()).setDate(tmpDate);
+								mapfinal.get(entry.getKey()).getDate().setMonth(11);
+								break;
+							case 6:
+								mapfinal.get(entry.getKey()).setDate(tmpDate);
+								mapfinal.get(entry.getKey()).getDate().setMonth(0);
+								mapfinal.get(entry.getKey()).getDate().setYear(entry.getValue().getDate().getYear() + 1);
+								break;
+							case 7:
+								mapfinal.get(entry.getKey()).setDate(tmpDate);
+								mapfinal.get(entry.getKey()).getDate().setMonth(1);
+								mapfinal.get(entry.getKey()).getDate().setYear(entry.getValue().getDate().getYear() + 1);
+								break;
+							case 8:
+								mapfinal.get(entry.getKey()).setDate(tmpDate);
+								mapfinal.get(entry.getKey()).getDate().setMonth(2);
+								mapfinal.get(entry.getKey()).getDate().setYear(entry.getValue().getDate().getYear() + 1);
+								break;
+							case 9:
+								mapfinal.get(entry.getKey()).setDate(tmpDate);
+								mapfinal.get(entry.getKey()).getDate().setMonth(3);
+								mapfinal.get(entry.getKey()).getDate().setYear(entry.getValue().getDate().getYear() + 1);
+								break;
+							case 10:
+								mapfinal.get(entry.getKey()).setDate(tmpDate);
+								mapfinal.get(entry.getKey()).getDate().setMonth(4);
+								mapfinal.get(entry.getKey()).getDate().setYear(entry.getValue().getDate().getYear() + 1);
+								break;
+							case 11:
+								mapfinal.get(entry.getKey()).setDate(tmpDate);
+								mapfinal.get(entry.getKey()).getDate().setMonth(5);
+								mapfinal.get(entry.getKey()).getDate().setYear(entry.getValue().getDate().getYear() + 1);
+								break;
+						}
+					} else {// berechnung des nächsten Datums der Konferenz
+						mapfinal.get(entry.getKey()).getDate().setMonth(tmpDate.getMonth());
+					}
 			}else{
-			if (entry.getValue().getYear() == 0.5) {
-				// TODO: berechnung des nächsten Datums mit Jahresabstand 0.5
-				switch (tmpDate.getMonth()) {
-					case 0:
-						mapfinal.get(entry.getKey()).setDate(tmpDate);
-						mapfinal.get(entry.getKey()).getDate().setMonth(6);;
-						break;
-					case 1:
-						
-						mapfinal.get(entry.getKey()).setDate(tmpDate);
-						mapfinal.get(entry.getKey()).getDate().setMonth(7);
-						break;
-					case 2:
-						mapfinal.get(entry.getKey()).setDate(tmpDate);
-						mapfinal.get(entry.getKey()).getDate().setMonth(8);
-						break;
-					case 3:
-						mapfinal.get(entry.getKey()).setDate(tmpDate);
-						mapfinal.get(entry.getKey()).getDate().setMonth(9);
-						break;
-					case 4:
-						mapfinal.get(entry.getKey()).setDate(tmpDate);
-						mapfinal.get(entry.getKey()).getDate().setMonth(10);
-						break;
-					case 5:
-						mapfinal.get(entry.getKey()).setDate(tmpDate);
-						mapfinal.get(entry.getKey()).getDate().setMonth(11);
-						break;
-					case 6:
-						mapfinal.get(entry.getKey()).setDate(tmpDate);
-						mapfinal.get(entry.getKey()).getDate().setMonth(0);
-						mapfinal.get(entry.getKey()).getDate().setYear(entry.getValue().getDate().getYear() + 1);
-						break;
-					case 7:
-						mapfinal.get(entry.getKey()).setDate(tmpDate);
-						mapfinal.get(entry.getKey()).getDate().setMonth(1);
-						mapfinal.get(entry.getKey()).getDate().setYear(entry.getValue().getDate().getYear() + 1);
-						break;
-					case 8:
-						mapfinal.get(entry.getKey()).setDate(tmpDate);
-						mapfinal.get(entry.getKey()).getDate().setMonth(2);
-						mapfinal.get(entry.getKey()).getDate().setYear(entry.getValue().getDate().getYear() + 1);
-						break;
-					case 9:
-						mapfinal.get(entry.getKey()).setDate(tmpDate);
-						mapfinal.get(entry.getKey()).getDate().setMonth(3);
-						mapfinal.get(entry.getKey()).getDate().setYear(entry.getValue().getDate().getYear() + 1);
-						break;
-					case 10:
-						mapfinal.get(entry.getKey()).setDate(tmpDate);
-						mapfinal.get(entry.getKey()).getDate().setMonth(4);
-						mapfinal.get(entry.getKey()).getDate().setYear(entry.getValue().getDate().getYear() + 1);
-						break;
-					case 11:
-						mapfinal.get(entry.getKey()).setDate(tmpDate);
-						mapfinal.get(entry.getKey()).getDate().setMonth(5);
-						mapfinal.get(entry.getKey()).getDate().setYear(entry.getValue().getDate().getYear() + 1);
-						break;
-				}
-			} else {// berechnung des nächsten Datums der Konferenz
-				mapfinal.get(entry.getKey()).getDate().setMonth(tmpDate.getMonth());
-			}}
+				mapfinal.get(entry.getKey()).setDate(customdate.get(entry.getKey()));
+			}
 		}
 		System.out.println("Monate berechnet.");
 	}
