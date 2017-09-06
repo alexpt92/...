@@ -46,11 +46,13 @@ public class Main {
 		}
 		
 		JFrame frame = new JFrame("Controlling");
-		frame.setVisible(true);
+		
 		frame.setSize(500,200);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
 		JPanel panel = new JPanel();
+		//frame.getContentPane().add(BorderLayout.CENTER, panel);;
+		
+		
 		JTextField upcoming=new JTextField("Upcoming:", 10);
 		JTextField todo=new JTextField("TODO:", 10);
 		JButton button = new JButton("Change Customdate");
@@ -59,12 +61,17 @@ public class Main {
 		panel.add(upcoming, BorderLayout.CENTER);
 		panel.add(todo, BorderLayout.SOUTH);
 		panel.add(button, BorderLayout.EAST);
-
+		frame.add(panel);
+		frame.setVisible(true);
+		
+		
 		button.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//ConfigHandler.this.changeCustom();
+				//ConfigHandler config =ConfigHandler.this;
+				//changeCustom();
+				//ConfigHandler.changeCustom();
 				
 			}
 		});
