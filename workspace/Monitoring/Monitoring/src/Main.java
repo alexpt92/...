@@ -69,11 +69,44 @@ public class Main {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//ConfigHandler config =ConfigHandler.this;
-				//changeCustom();
-				//ConfigHandler.changeCustom();
 				
+				String t="";
+				BufferedWriter bw;
+				String line;
+				
+				t ="conf/"+ JOptionPane.showInputDialog("Bitte Kürzel der Conference eingeben" )+"/";
+				
+				int d =Integer.parseInt(JOptionPane.showInputDialog("Bitte Tag eingeben (1-31)"));
+				int m =Integer.parseInt(JOptionPane.showInputDialog("Bitte Monat eingeben (1-12)"));
+				int y= Integer.parseInt(JOptionPane.showInputDialog("Bitte Jahr eingeben"));
+				
+				for (Entry<String, Date> entry : customdate.entrySet()) {
+					if(entry.getKey().equals(t)){
+						Date tmp = new Date(y-1900,m-1,d);
+						entry.setValue(tmp);
+						
+					}
+				}
+			
+				Map<String, Date> customfinal = new TreeMap<String, Date>(customdate);
+				
+				try {
+					PrintStream ps;
+					ps = new PrintStream(new File("Customdate.txt"));
+						
+					for (Entry<String, Date> entry : customfinal.entrySet()) {
+						ps.println(entry.getKey() + " ;" + entry.getValue());
+					}
+						ps.close();
+					} catch (FileNotFoundException h) {
+						// TODO Auto-generated catch block
+						h.printStackTrace();
+				}
 			}
+			
+			
+			
+			
 		});
 		
 		
