@@ -122,7 +122,7 @@ class ConfigHandler extends DefaultHandler {
 			insideTitle = false;
 			insideProceeding = false;
 			String text = textContent.toString();
-			Date zero = new Date(0, 0, 0);
+			Date zero = new Date(100,11,31);
 
 			Pattern noDate = Pattern.compile("\\d\\d\\d\\d");
 			Matcher regexMatcher = noDate.matcher(aktuellerStream);
@@ -131,19 +131,31 @@ class ConfigHandler extends DefaultHandler {
 				if (text.contains("January")) {
 					// String map = text.substring(text.indexOf("January"));
 					mapzwei.put(aktuellerStream,toDate(text.substring(text.indexOf("January"))));
-				} else {if (text.contains("February")) {
+				}else {if (text.contains("Januar")) {
+					// map = text.substring(text.indexOf("April"));
+					mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("Januar"))));
+				}else {if (text.contains("February")) {
 					// map = text.substring(text.indexOf("February"));
 					mapzwei.put(aktuellerStream,toDate(text.substring(text.indexOf("February"))));
-				} else {if (text.contains("March")) {
+				}else {if (text.contains("Februar")) {
+					// map = text.substring(text.indexOf("April"));
+					mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("Februar"))));
+				}else {if (text.contains("March")) {
 					// map = text.substring(text.indexOf("March"));
 					mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("March"))));
-				} else {if (text.contains("April")) {
+				}else {if (text.contains("März")) {
+					// map = text.substring(text.indexOf("April"));
+					mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("März"))));
+				}else {if (text.contains("April")) {
 					// map = text.substring(text.indexOf("April"));
 					mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("April"))));
 				} else {if (text.contains("May")) {
 					// map = text.substring(text.indexOf("May"));
 					mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("May"))));
-				} else {if (text.contains("June")) {
+				}else {if (text.contains("Mai")) {
+					// map = text.substring(text.indexOf("April"));
+					mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("Mai"))));
+				}else {if (text.contains("June")) {
 					// map =text.substring(text.indexOf("June"));
 					mapzwei.put(aktuellerStream,toDate(text.substring(text.indexOf("June"))));
 				} else {if (text.contains("Juni")) {
@@ -152,7 +164,10 @@ class ConfigHandler extends DefaultHandler {
 				} else {if (text.contains("July")) {
 					// map = text.substring(text.indexOf("July"));
 					mapzwei.put(aktuellerStream,toDate(text.substring(text.indexOf("July"))));
-				} else {if (text.contains("August")) {
+				}else {if (text.contains("Juli")) {
+					// map = text.substring(text.indexOf("April"));
+					mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("Juli"))));
+				}else {if (text.contains("August")) {
 					// map = text.substring(text.indexOf("August"));
 					mapzwei.put(aktuellerStream,toDate(text.substring(text.indexOf("August"))));
 				} else {if (text.contains("September")) {
@@ -161,25 +176,34 @@ class ConfigHandler extends DefaultHandler {
 				} else {if (text.contains("October")) {
 					// map = text.substring(text.indexOf("October"));
 					mapzwei.put(aktuellerStream,toDate(text.substring(text.indexOf("October"))));
-				} else {if (text.contains("November")) {
+				}else {if (text.contains("Oktober")) {
+					// map = text.substring(text.indexOf("April"));
+					mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("Oktober"))));
+				}else {if (text.contains("November")) {
 					// map = text.substring(text.indexOf("November"));
 					mapzwei.put(aktuellerStream,toDate(text.substring(text.indexOf("November"))));
-				} else {if (text.contains("December")) {
+				}else {if (text.contains("December")) {
 					// map = text.substring(text.indexOf("December"));
 					mapzwei.put(aktuellerStream,toDate(text.substring(text.indexOf("December"))));
-				} else {
+				}else {if (text.contains("Dezember")) {
+					// map = text.substring(text.indexOf("April"));
+					mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("Dezember"))));
+				}
+				else {
 					ohneMonat++;
 
-					if (regexMatcher.find()) {
-						int jahr = Integer.parseInt(
+				/*	if (regexMatcher.find()) {
+						int jahr = Integer.parseInt(2006 IEEE/ACS International Conference on Computer Systems and Applications (AICCSA 2006), March 8-11, Dubai/Sharjah, UAE
 								aktuellerStream.substring(regexMatcher.start(),regexMatcher.start() + 4));
-						Date datum = new Date(jahr - 1900,0,15);
+						Date datum = new Date(jahr ,0,15);
 						mapzwei.put(aktuellerStream,datum);
 					} else {
 						mapzwei.put(aktuellerStream,zero);
-					}
+					}*/
+					mapzwei.put(aktuellerStream,zero);
+					
 
-				}}}}}}}}}}}}}
+				}}}}}}}}}}}}}}}}}}}}
 			}textContent.delete(0, textContent.length());
 		}
 		
@@ -203,10 +227,11 @@ class ConfigHandler extends DefaultHandler {
 		Pattern regex = Pattern.compile("\\d\\d\\d\\d");
 		Pattern days = Pattern.compile("\\d\\d");
 		Pattern oneday = Pattern.compile("\\d");
-		Matcher regexMatcher = regex.matcher(s);
+		Matcher yearMatcher = regex.matcher(s);
+		Matcher ohneYearMatcher = regex.matcher(aktuellerStream);
 		Matcher daysMatcher = days.matcher(s);
 		Matcher onedayMatcher = oneday.matcher(s);
-		String m;
+		
 
 		// Berechnung des Monats
 		if (s.contains("January")|| s.contains("Januar")) {
@@ -249,13 +274,14 @@ class ConfigHandler extends DefaultHandler {
 
 		//
 		// Berechnung des Jahres
-		if (regexMatcher.find()) {
-			jahr = Integer.parseInt(s.substring(regexMatcher.start(),
-					regexMatcher.start() + 4));
+		if (yearMatcher.find()) {
+			jahr = Integer.parseInt(s.substring(yearMatcher.start(),
+					yearMatcher.start() + 4));
 		} else {
-			jahr = Integer.parseInt(aktuellerStream.substring(
-					aktuellerStream.lastIndexOf("/") + 1,
-					aktuellerStream.lastIndexOf("/") + 3)) + 1900;
+			if(ohneYearMatcher.find()){//Streams ohne Jahr -> Jahr aus Key ziehen
+				jahr = Integer.parseInt(aktuellerStream.substring(ohneYearMatcher.start(),
+			
+					ohneYearMatcher.start() + 4));}
 		}
 
 		Date datum = new Date(jahr - 1900, monat, tag);
@@ -264,7 +290,7 @@ class ConfigHandler extends DefaultHandler {
 	}
 
 	public void endDocument() throws SAXException {
-		File f = new File("/home/mack/workspace/Flaggen/Monitoring/Customdate.txt");
+		File f = new File("/home/kiesant/workspace/StudienProjekt_Parser/Customdate.txt");
 		
 		Map<String, Date> map = new TreeMap<String, Date>(mapzwei);
 		Map<String, Conf> mapfinal = new TreeMap<String, Conf>(finalmap);
@@ -395,7 +421,7 @@ class ConfigHandler extends DefaultHandler {
 		String line;
 		
 		try{
-			bf=new BufferedReader(new FileReader("/home/mack/workspace/Flaggen/Monitoring/Customdate.txt"));
+			bf=new BufferedReader(new FileReader("/home/kiesant/workspace/StudienProjekt_Parser/Customdate.txt"));
 			while((line=bf.readLine())!=null){
 				String[] a = line.split(" ;");
 				DateFormat format = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
