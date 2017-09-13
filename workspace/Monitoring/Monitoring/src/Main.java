@@ -1,23 +1,63 @@
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
-
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+//import static java.lang.Math.toIntExact;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Map.Entry;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipFile;
+
+import javax.jws.soap.InitParam;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
-public class Main {
+import org.xml.sax.Attributes;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
-	public static void main(String[] args) {
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+
+public class Maain {
+	
+	
+	public static void main(String[] args) throws ParseException {
+			
+		
 		try {
 			// XMLReader erzeugen
 			XMLReader xmlReader = XMLReaderFactory.createXMLReader();
@@ -26,11 +66,11 @@ public class Main {
 			// ZipFile("http://dblp.uni-trier.de/xml/dblp.xml.gz");
 
 			// Pfad zur XML Datei
-			FileReader reader = new FileReader("/home/mack/dblp.xml");
+			FileReader reader = new FileReader("/home/kiesant/Downloads/dblp(1).xml");
 			InputSource inputSource = new InputSource(reader);
 
 			// DTD kann optional übergeben werden
-			inputSource.setSystemId("/home/mack/dblp.dtd");
+			inputSource.setSystemId("/home/kiesant/Downloads/dblp.dtd");
 
 			// PersonenContentHandler wird übergeben
 			xmlReader.setContentHandler(new ConfigHandler());
@@ -43,7 +83,7 @@ public class Main {
 			e.printStackTrace();
 		} catch (SAXException e) {
 			e.printStackTrace();
-		}
+		}		
 		
 		JFrame frame = new JFrame("Controlling");
 		
@@ -64,15 +104,76 @@ public class Main {
 		frame.add(panel);
 		frame.setVisible(true);
 		
+		Map<String, Date> alert = new HashMap <String,Date>();	
+		Map<String, Date> upcomingMap = new HashMap <String,Date>();
+	
+			BufferedReader bf;
+			String line;
+			
+			try{
+				bf=new BufferedReader(new FileReader("/home/kiesant/workspace/StudienProjekt_Parser/MapFinalPrint.txt"));
+				while((line=bf.readLine())!=null){
+					String[] a = line.split(";");
+					Date now = new Date();
+					now.setDate(now.getDate()+3);
+					if(a[2].contains("ALERT")){
+						DateFormat format = new SimpleDateFormat(" EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
+						Date date= format.parse(a[1]);
+					alert.put(a[0],date);
+					}else{
+						DateFormat format = new SimpleDateFormat(" EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
+						Date date= format.parse(a[1]);
+						if (date.before(now) && date.after(new Date())){
+						upcomingMap.put(a[0],date);
+						}
+					}
+				}
+				bf.close();
+			}catch(IOException e){
+				
+			
+		}
+			
+			Map<String, Date> finalAlert = new TreeMap<String, Date>(alert);
+			Map<String, Date> finalUp = new TreeMap<String, Date>(upcomingMap);
+			try {
+				PrintStream ps;
+				ps = new PrintStream(new File("Alter.txt"));
+					
+				for (Entry<String, Date> entry : finalAlert.entrySet()) {
+					ps.println(entry.getKey() + " ;" + entry.getValue());
+				}
+					ps.close();
+				} catch (FileNotFoundException h) {
+					// TODO Auto-generated catch block
+					h.printStackTrace();
+			}
+			try {
+				PrintStream ps;
+				ps = new PrintStream(new File("CUpcoming.txt"));
+					
+				for (Entry<String, Date> entry : finalUp.entrySet()) {
+					ps.println(entry.getKey() + " ;" + entry.getValue());
+				}
+					ps.close();
+				} catch (FileNotFoundException h) {
+					// TODO Auto-generated catch block
+					h.printStackTrace();
+			}
 		
 		button.addActionListener(new ActionListener() {
-			
+			Map<String, Date> customdate = new HashMap <String,Date>();	
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+				try {
+					readCustomDate();
+				} catch (ParseException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}			
+			
 				String t="";
-				BufferedWriter bw;
-				String line;
+				
 				
 				t ="conf/"+ JOptionPane.showInputDialog("Bitte Kürzel der Conference eingeben" )+"/";
 				
@@ -104,13 +205,28 @@ public class Main {
 				}
 			}
 			
-			
-			
+			public void readCustomDate() throws ParseException{
+				BufferedReader bf;
+				String line;
+				
+				try{
+					bf=new BufferedReader(new FileReader("/home/kiesant/workspace/StudienProjekt_Parser/Customdate.txt"));
+					while((line=bf.readLine())!=null){
+						String[] a = line.split(" ;");
+						DateFormat format = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
+						Date date= format.parse(a[1]);
+						customdate.put(a[0],date);
+					}
+					bf.close();
+				}catch(IOException e){
+					
+				}
+			}
+		
 			
 		});
 		
 		
-		
+				
 	}
 }
-
