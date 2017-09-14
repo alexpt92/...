@@ -559,63 +559,49 @@ class ConfigHandler extends DefaultHandler {
 					double sonderfall = -2;
 					mapfinal.put(entry.getKey(), new Conf(new Date(),sonderfall));
 				} else {if (year.size() < 6) {
-						y = y + (6 - year.size());
+					y = y + (6 - year.size());
 				}
 				
-				for (int i = 1; y < 6; i++, y++) {
-					// System.out.println(year.size() - (i));
-					// System.out.println(year.size() - (i + 1));
-					if ((year.get(year.size() - (i)).getYear() - year.get(year.size()- (i + 1)).getYear()) == 1) {
-						counter1++;
-					} else {if ((year.get(year.size() - (i)).getYear() - year.get(year.size() - (i + 1)).getYear()) == 2) {
-						counter2++;
-					} else {if ((year.get(year.size() - (i)).getYear() - year.get(year.size() - (i + 1)).getYear()) == 3) {
-						counter3++;
-					} else {if ((year.get(year.size() - (i)).getYear() - year.get(year.size() - (i + 1)).getYear()) == 0) {
-						counter05++;
-					}}}}
+					for (int i = 1; y < 6; i++, y++) {
+						// System.out.println(year.size() - (i));
+						// System.out.println(year.size() - (i + 1));
+						if ((year.get(year.size() - (i)).getYear() - year.get(year.size()- (i + 1)).getYear()) == 1) {
+							counter1++;
+						} else {if ((year.get(year.size() - (i)).getYear() - year.get(year.size() - (i + 1)).getYear()) == 2) {
+							counter2++;
+						} else {if ((year.get(year.size() - (i)).getYear() - year.get(year.size() - (i + 1)).getYear()) == 3) {
+							counter3++;
+						} else {if ((year.get(year.size() - (i)).getYear() - year.get(year.size() - (i + 1)).getYear()) == 0) {
+							counter05++;
+						}}}}
 
 					}
 				
-				if (counter1 > counter2 && counter1 > counter3
-							&& counter1 > counter05 || counter1 == counter2
-							&& counter1 > counter3 && counter1 > counter05
-							|| counter1 == counter3 && counter1 > counter05
-							&& counter1 > counter2) {
-						// Jahresabstand 1 -> Letztes Veranstaltungsjahr +1
-					mapfinal.get(entry.getKey()).setDate(maximum);
-					mapfinal.get(entry.getKey()).getDate().setYear(maximum.getYear() + 1);
-						mapfinal.get(entry.getKey()).setYear(1);
-					} else {
-						if (counter2 > counter1 && counter2 > counter3
-								&& counter2 > counter05 || counter2 == counter3
-								&& counter2 > counter05) {
+					if (counter1 > counter2 && counter1 > counter3 && counter1 > counter05 
+							|| counter1 == counter2 && counter1 > counter3 && counter1 > counter05
+							|| counter1 == counter3 && counter1 > counter05&& counter1 > counter2) {
+							// Jahresabstand 1 -> Letztes Veranstaltungsjahr +1
+							mapfinal.get(entry.getKey()).setDate(maximum);
+							mapfinal.get(entry.getKey()).getDate().setYear(maximum.getYear() + 1);
+							mapfinal.get(entry.getKey()).setYear(1);
+					} else {if (counter2 > counter1 && counter2 > counter3&& counter2 > counter05 
+							|| counter2 == counter3 && counter2 > counter05) {
 							// Jahresabstand 2 -> Letztes Veranstaltungsjahr +2
 							mapfinal.get(entry.getKey()).setDate(maximum);
 							mapfinal.get(entry.getKey()).getDate().setYear(maximum.getYear() + 2);
 							mapfinal.get(entry.getKey()).setYear(2);
-						} else {
-							if (counter3 > counter2 && counter3 > counter1&& counter3 > counter05) {
-								// Jahresabstand 3 -> Letztes Veranstaltungsjahr
-								// +3
-								mapfinal.get(entry.getKey()).setDate(maximum);
-								mapfinal.get(entry.getKey()).getDate().setYear(maximum.getYear() + 3);
-								mapfinal.get(entry.getKey()).setYear(3);
-							} else {
-								if (counter05 > counter1&& counter05 > counter2
-										&& counter05 > counter3) {
-									mapfinal.get(entry.getKey()).setDate(maximum);
-									mapfinal.get(entry.getKey()).getDate().setYear(maximum.getYear());
-									mapfinal.get(entry.getKey()).setYear(0.5);
-									
-									// TODO: Jahresabstand 0.5 -> + 6 Monate???
-								}
-								else{
-									mapfinal.put(entry.getKey(), new Conf(new Date(),-3));
-								}
-							}
-						}
-					}
+					} else {if (counter3 > counter2 && counter3 > counter1&& counter3 > counter05) {
+							// Jahresabstand 3 -> Letztes Veranstaltungsjahr +3
+							mapfinal.get(entry.getKey()).setDate(maximum);
+							mapfinal.get(entry.getKey()).getDate().setYear(maximum.getYear() + 3);
+							mapfinal.get(entry.getKey()).setYear(3);
+					} else {if (counter05 > counter1&& counter05 > counter2 && counter05 > counter3) {
+							mapfinal.get(entry.getKey()).setDate(maximum);
+							mapfinal.get(entry.getKey()).getDate().setYear(maximum.getYear());
+							mapfinal.get(entry.getKey()).setYear(0.5);
+					}else{
+							mapfinal.put(entry.getKey(), new Conf(new Date(),-3));
+					}}}}
 				}
 			}
 		}
