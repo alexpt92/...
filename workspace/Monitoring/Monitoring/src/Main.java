@@ -7,7 +7,10 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -15,11 +18,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-
 import java.util.Date;
 import java.util.Map.Entry;
 import java.util.Date;
@@ -34,7 +35,6 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipFile;
 
 import javax.jws.soap.InitParam;
-
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -94,21 +94,17 @@ public class Main {
 		// Read from MapFinalPrint.txt to alertMap || upcomingMap
 		try {
 			// TODO:Change Custom
-			bf = new BufferedReader(
-					new FileReader(
-							"G:/Users/Christian/Dropbox/Universität/SS 2013/Programmierung II/Übungen/StudienProjekt/MapFinalPrint.txt"));
+			bf = new BufferedReader(new FileReader("G:/Users/Christian/Dropbox/Universität/SS 2013/Programmierung II/Übungen/StudienProjekt/MapFinalPrint.txt"));
 			while ((line = bf.readLine()) != null) {
 				String[] a = line.split(";");
 				Date now = new Date();
 				now.setDate(now.getDate() + 3);
 				if (a[2].contains("ALERT")) {
-					DateFormat format = new SimpleDateFormat(
-							" EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
+					DateFormat format = new SimpleDateFormat(" EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
 					Date date = format.parse(a[1]);
 					alertMap.put(a[0], date);
 				} else {
-					DateFormat format = new SimpleDateFormat(
-							" EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
+					DateFormat format = new SimpleDateFormat(" EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
 					Date date = format.parse(a[1]);
 					if (date.before(now) && date.after(new Date())) {
 						upcomingMap.put(a[0], date);
@@ -158,17 +154,25 @@ public class Main {
 		JPanel panel = new JPanel();
 		// frame.getContentPane().add(BorderLayout.CENTER, panel);;
 
-		JTextField upcoming = new JTextField("Upcoming:", 10);
-		JTextField todo = new JTextField("TODO:", 10);
+		JTextArea upcoming = new JTextArea("Upcoming:"+"\n");
 		JButton button = new JButton("Change Customdate");
-
-		panel.setLayout(new BorderLayout());
-		panel.add(upcoming, BorderLayout.CENTER);
-		panel.add(todo, BorderLayout.SOUTH);
+		JScrollPane scroll = new JScrollPane(upcoming);
+		
+		scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		
+		panel.setLayout(new BorderLayout());		
 		panel.add(button, BorderLayout.EAST);
+		panel.add(scroll, BorderLayout.CENTER);
+		
+		//textfeld mit finalUp füllen
+		for (Entry<String, Date> entry1 : finalUp.entrySet()) {
+			upcoming.setText(upcoming.getText()+(entry1.getKey()+"; "+ entry1.getValue()+"\n"));
+		}
+		
 		frame.add(panel);
 		frame.setVisible(true);
-
+		
 		button.addActionListener(new ActionListener() {
 			Map<String, Date> customdate = new HashMap<String, Date>();
 
