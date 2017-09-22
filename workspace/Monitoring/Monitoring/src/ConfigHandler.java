@@ -18,8 +18,6 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.JOptionPane;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
@@ -30,17 +28,19 @@ class ConfigHandler extends DefaultHandler {
 	
 	String aktuellerStream;
 	StringBuilder textContent = new StringBuilder();
-	
-	Map<String, Date> mapzwei = new HashMap<String, Date>();
+	//Maps________________________________________________________________________________
+	Map<String, Date> dblpEntry = new HashMap<String, Date>();
 	Map<String, Conf> finalmap = new HashMap<String, Conf>();
 	Map<String, Conf> outdated = new HashMap<String, Conf>();
 	Map<String, Date> customdate = new HashMap<String, Date>();
+	Map<String, Date> sonderfall = new HashMap<String, Date>();
+	
 	
 	int ohneMonat = 0;
 	int counter;
 	int titlecounter;
 	private static long time;
-
+	//Parsing_____________________________________________________________________________
 	public boolean insideStream = false, insideTitle = false,
 			insideProceeding = false;
 	// private ArrayList<Person> allePersonen = new ArrayList<Person>();
@@ -93,7 +93,6 @@ class ConfigHandler extends DefaultHandler {
 				} else {if (!finalmap.containsKey(tmp)) {
 					finalmap.put(tmp, c);
 				}}
-				
 				insideStream = true;
 			}
 		}
@@ -119,89 +118,60 @@ class ConfigHandler extends DefaultHandler {
 
 			if (aktuellerStream != null) {
 				if (text.contains("January")) {
-					// String map = text.substring(text.indexOf("January"));
-					mapzwei.put(aktuellerStream,toDate(text.substring(text.indexOf("January"))));
+					dblpEntry.put(aktuellerStream,toDate(text.substring(text.indexOf("January"))));
 				}else {if (text.contains("Januar")) {
-					// map = text.substring(text.indexOf("April"));
-					mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("Januar"))));
+					dblpEntry.put(aktuellerStream, toDate(text.substring(text.indexOf("Januar"))));
 				}else {if (text.contains("February")) {
-					// map = text.substring(text.indexOf("February"));
-					mapzwei.put(aktuellerStream,toDate(text.substring(text.indexOf("February"))));
+					dblpEntry.put(aktuellerStream,toDate(text.substring(text.indexOf("February"))));
 				}else {if (text.contains("Februar")) {
-					// map = text.substring(text.indexOf("April"));
-					mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("Februar"))));
+					dblpEntry.put(aktuellerStream, toDate(text.substring(text.indexOf("Februar"))));
 				}else {if (text.contains("March")) {
-					// map = text.substring(text.indexOf("March"));
-					mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("March"))));
+					dblpEntry.put(aktuellerStream, toDate(text.substring(text.indexOf("March"))));
 				}else {if (text.contains("März")) {
-					// map = text.substring(text.indexOf("April"));
-					mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("März"))));
+					dblpEntry.put(aktuellerStream, toDate(text.substring(text.indexOf("März"))));
 				}else {if (text.contains("April")) {
-					// map = text.substring(text.indexOf("April"));
-					mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("April"))));
+					dblpEntry.put(aktuellerStream, toDate(text.substring(text.indexOf("April"))));
 				} else {if (text.contains("May")) {
-					// map = text.substring(text.indexOf("May"));
-					mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("May"))));
+					dblpEntry.put(aktuellerStream, toDate(text.substring(text.indexOf("May"))));
 				}else {if (text.contains("Mai")) {
-					// map = text.substring(text.indexOf("April"));
-					mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("Mai"))));
+					dblpEntry.put(aktuellerStream, toDate(text.substring(text.indexOf("Mai"))));
 				}else {if (text.contains("June")) {
-					// map =text.substring(text.indexOf("June"));
-					mapzwei.put(aktuellerStream,toDate(text.substring(text.indexOf("June"))));
+					dblpEntry.put(aktuellerStream,toDate(text.substring(text.indexOf("June"))));
 				} else {if (text.contains("Juni")) {
-					// map = text.substring(text.indexOf("Juni"));
-					mapzwei.put(aktuellerStream,toDate(text.substring(text.indexOf("Juni"))));
+					dblpEntry.put(aktuellerStream,toDate(text.substring(text.indexOf("Juni"))));
 				} else {if (text.contains("July")) {
-					// map = text.substring(text.indexOf("July"));
-					mapzwei.put(aktuellerStream,toDate(text.substring(text.indexOf("July"))));
+					dblpEntry.put(aktuellerStream,toDate(text.substring(text.indexOf("July"))));
 				}else {if (text.contains("Juli")) {
-					// map = text.substring(text.indexOf("April"));
-					mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("Juli"))));
+					dblpEntry.put(aktuellerStream, toDate(text.substring(text.indexOf("Juli"))));
 				}else {if (text.contains("August")) {
-					// map = text.substring(text.indexOf("August"));
-					mapzwei.put(aktuellerStream,toDate(text.substring(text.indexOf("August"))));
+					dblpEntry.put(aktuellerStream,toDate(text.substring(text.indexOf("August"))));
 				} else {if (text.contains("September")) {
-					// map = text.substring(text.indexOf("September"));
-					mapzwei.put(aktuellerStream,toDate(text.substring(text.indexOf("September"))));
+					dblpEntry.put(aktuellerStream,toDate(text.substring(text.indexOf("September"))));
 				} else {if (text.contains("October")) {
-					// map = text.substring(text.indexOf("October"));
-					mapzwei.put(aktuellerStream,toDate(text.substring(text.indexOf("October"))));
+					dblpEntry.put(aktuellerStream,toDate(text.substring(text.indexOf("October"))));
 				}else {if (text.contains("Oktober")) {
-					// map = text.substring(text.indexOf("April"));
-					mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("Oktober"))));
+					dblpEntry.put(aktuellerStream, toDate(text.substring(text.indexOf("Oktober"))));
 				}else {if (text.contains("November")) {
-					// map = text.substring(text.indexOf("November"));
-					mapzwei.put(aktuellerStream,toDate(text.substring(text.indexOf("November"))));
+					dblpEntry.put(aktuellerStream,toDate(text.substring(text.indexOf("November"))));
 				}else {if (text.contains("December")) {
-					// map = text.substring(text.indexOf("December"));
-					mapzwei.put(aktuellerStream,toDate(text.substring(text.indexOf("December"))));
+					dblpEntry.put(aktuellerStream,toDate(text.substring(text.indexOf("December"))));
 				}else {if (text.contains("Dezember")) {
-					// map = text.substring(text.indexOf("April"));
-					mapzwei.put(aktuellerStream, toDate(text.substring(text.indexOf("Dezember"))));
+					dblpEntry.put(aktuellerStream, toDate(text.substring(text.indexOf("Dezember"))));
 				}
 				else {
 					ohneMonat++;
 
-				/*	if (regexMatcher.find()) {
-						int jahr = Integer.parseInt(aktuellerStream.substring(regexMatcher.start(),regexMatcher.start() + 4));
-						Date datum = new Date(jahr ,0,15);
-						mapzwei.put(aktuellerStream,datum);
-					} else {
-						mapzwei.put(aktuellerStream,zero);
-					}*/
-					mapzwei.put(aktuellerStream,zero);
+					dblpEntry.put(aktuellerStream,zero);
+					sonderfall.put(aktuellerStream, zero);
 				}}}}}}}}}}}}}}}}}}}}
 			}textContent.delete(0, textContent.length());
 		}
 		
-		if (insideStream&& (qName.equals("article") || qName.equals("inproceedings")
-						|| qName.equals("proceedings") || qName.equals("book")
-						|| qName.equals("incollection")	|| qName.equals("phdthesis") 
-						|| qName.equals("masterthesis"))) {
+		if (insideStream&& (qName.equals("article") || qName.equals("inproceedings")|| qName.equals("proceedings") || 
+				qName.equals("book")|| qName.equals("incollection")	|| qName.equals("phdthesis") || qName.equals("masterthesis"))) {
 			if (qName.equals("proceedings")) {
 				insideProceeding = false;
 			}
-			// streamName = "";
 			insideStream = false;
 		}
 	}
@@ -210,11 +180,13 @@ class ConfigHandler extends DefaultHandler {
 		int tag = 15;
 		int monat = 0;
 		int jahr = 1900;
-		Pattern regex = Pattern.compile("\\d\\d\\d\\d");
+		Pattern year = Pattern.compile("\\d\\d\\d\\d");
+		Pattern daypoint = Pattern.compile("'\\d\\p{Punct}\\d");
 		Pattern days = Pattern.compile("\\d\\d");
 		Pattern oneday = Pattern.compile("\\d");
-		Matcher yearMatcher = regex.matcher(s);
-		Matcher ohneYearMatcher = regex.matcher(aktuellerStream);
+		Matcher yearMatcher = year.matcher(s);
+		Matcher dayPointMatcher = year.matcher(s);
+		Matcher ohneYearMatcher = year.matcher(aktuellerStream);
 		Matcher daysMatcher = days.matcher(s);
 		Matcher onedayMatcher = oneday.matcher(s);
 		
@@ -247,12 +219,13 @@ class ConfigHandler extends DefaultHandler {
 		
 		// Berechnung des Tages
 		// vorher gucken ob wirklich zahlen des Tages drinstehen
-		if (daysMatcher.find()) {
+		if(dayPointMatcher.find()){
+			tag = Integer.parseInt(s.substring(dayPointMatcher.start(),dayPointMatcher.start() + 1));
+		}else{if (daysMatcher.find()) {
 			tag = Integer.parseInt(s.substring(daysMatcher.start(),daysMatcher.start() + 2));
 		}else{if (onedayMatcher.find()) {
 			tag = Integer.parseInt(s.substring(onedayMatcher.start(),onedayMatcher.start() + 1));
-			}
-		}
+		}}}
 
 		// Berechnung des Jahres
 		if (yearMatcher.find()) {// "/d/d/d/d" in "Title" suchen
@@ -272,8 +245,9 @@ class ConfigHandler extends DefaultHandler {
 		//TODO:Change Custom
 		File f = new File("G:/Users/Christian/Dropbox/Universität/SS 2013/Programmierung II/Übungen/StudienProjekt/Customdate.txt");
 		
-		Map<String, Date> map = new TreeMap<String, Date>(mapzwei);
-		Map<String, Conf> mapfinal = new TreeMap<String, Conf>(finalmap);
+		//organice Maps________________________________________________________________________
+		Map<String, Date> dblpEntryFinal = new TreeMap<String, Date>(dblpEntry);
+		Map<String, Conf> finalMapFinal = new TreeMap<String, Conf>(finalmap);
 		
 		if(f.exists()){
 			try {
@@ -282,21 +256,38 @@ class ConfigHandler extends DefaultHandler {
 				e.printStackTrace();
 			}
 		}else{
-			createCustomFinal(mapfinal);
+			createCustomFinal(finalMapFinal);
 		}
 		
-		yearFinal(map, mapfinal);
-		datumFinal(map, mapfinal);
-		
-		Map<String, Conf> outdatedfinal = new TreeMap<String, Conf>(outdated);
+		//calculate Maps_____________________________________________________________________________
+		yearFinal(dblpEntryFinal, finalMapFinal);
+		datumFinal(dblpEntryFinal, finalMapFinal);
+		//_____________________________________________________________________________________
+		Map<String, Date> sonderfallFinal = new TreeMap<String, Date>(sonderfall);
+		Map<String, Conf> outdatedFinal = new TreeMap<String, Conf>(outdated);
 		Map<String, Date> customfinal = new TreeMap<String, Date>(customdate);
 		
-		//Print map
+		//PrintMaps____________________________________________________________________________
+		//Print dblpEntryFinal
 		try {
 			PrintStream ps;
 			ps = new PrintStream(new File("MapPrint.txt"));
 
-			for (Entry<String, Date> entry : map.entrySet()) {
+			for (Entry<String, Date> entry : dblpEntryFinal.entrySet()) {
+				ps.println(entry.getKey() + " ;" + entry.getValue());
+
+			}
+			ps.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		//Print sonderfallFinal
+		try {
+			PrintStream ps;
+			ps = new PrintStream(new File("noDate.txt"));
+
+			for (Entry<String, Date> entry : sonderfallFinal.entrySet()) {
 				ps.println(entry.getKey() + " ;" + entry.getValue());
 
 			}
@@ -323,7 +314,7 @@ class ConfigHandler extends DefaultHandler {
 			PrintStream ps;
 			ps = new PrintStream(new File("Outdated.txt"));
 
-			for (Entry<String, Conf> entry : outdatedfinal.entrySet()) {
+			for (Entry<String, Conf> entry : outdatedFinal.entrySet()) {
 				ps.println(entry.getKey() + " ;" + entry.getValue().getDate()
 						+ " ;" + entry.getValue().getYear());
 			}
@@ -338,7 +329,7 @@ class ConfigHandler extends DefaultHandler {
 			ps = new PrintStream(new File("MapFinalPrint.txt"));
 			Date now = new Date();
 			String alert = "ALERT!!";
-			for (Entry<String, Conf> entry : mapfinal.entrySet()) {
+			for (Entry<String, Conf> entry : finalMapFinal.entrySet()) {
 				if (entry.getValue().getDate().before(now)) {
 					alert = "ALERT!!!";
 				} else {
@@ -351,11 +342,6 @@ class ConfigHandler extends DefaultHandler {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		System.out.println("File printed.");
-		System.out.println("Anzahl der Tags: " + counter);
-		System.out.println("Anzahl der titelTags: " + titlecounter);
-		System.out.println("Laufzeit: " + time + "ms");
-		System.out.println("Titel ohne Monat" + ohneMonat);
 	}
 
 	public void createCustomFinal(Map<String, Conf> mapfinal) {
@@ -383,7 +369,6 @@ class ConfigHandler extends DefaultHandler {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	public void datumFinal(Map<String, Date> map, Map<String, Conf> mapfinal) {
 		System.out.println("Berechne Monate.");
 		Map<String, Date> tmpmap = map;
@@ -476,20 +461,9 @@ class ConfigHandler extends DefaultHandler {
 		System.out.println("Monate berechnet.");
 	}
 
-	/*
-	 * int tmp = 0; Map<String, Date> tmpmap = map; for (Entry<String, Conf>
-	 * entry : mapfinal.entrySet()) { String finalmapkey = entry.getKey(); //
-	 * erstellen eines Arrays für einen Eintrag in mapfinal for (Entry<String,
-	 * Date> entry1 : tmpmap.entrySet()) { if
-	 * (entry1.getKey().contains(finalmapkey)) { d[tmp] = entry1.getValue();
-	 * tmp++; } else { break; } } }
-	 */
-
 	public void yearFinal(Map<String, Date> map, Map<String, Conf> mapfinal) {
 		System.out.println("Berechne Jahresabstand.");
 		List<Date> year = new ArrayList<Date>();
-
-		// Long[] y = new Long[100];
 
 		int tmp = 0;
 		Map<String, Date> tmpmap = map;
@@ -501,33 +475,28 @@ class ConfigHandler extends DefaultHandler {
 			String finalmapkey = entry.getKey();
 			year.clear();
 			tmp = 0;
-			// tmpmap=tmpmapfinal;
 
 			for (Entry<String, Date> entry1 : tmpmap.entrySet()) {
 				if (entry1.getKey().contains(finalmapkey)) {	
+					//wenn das Array leer ist
 					if (tmp == 0) {
 						year.add(entry1.getValue());
 						tmp++;
-					} else {
-						if(tmpDate.getMonth()==entry1.getValue().getMonth()&&tmpDate.getYear()==entry1.getValue().getYear()){
-							
-						}else{
-							if (entry1.getValue().equals(tmpDate)) {
-							} else {
-								if (year.contains(entry1.getValue().getYear())) {
-								} else {
-									year.add( entry1.getValue());
-								}
-							}
-						}					
-					}
+					}else{if(tmpDate.getMonth()==entry1.getValue().getMonth()&&tmpDate.getYear()==entry1.getValue().getYear()){
+						//nichts tun wenn letzter und jetziger entry gleichen Monat und gleiches Jahr enthält
+					}else{if (entry1.getValue().equals(tmpDate)) {
+						//nichts tun wenn Entry mehrfach vorkommt
+					}else{if(year.contains(entry1.getValue().getYear())) {
+						//nichts tun wenn ein entry zu dem Jahr schon enthalten ist.
+					}else{
+						year.add( entry1.getValue());
+					}}}}
 				} else {
 					if (year.isEmpty()) {
 					} else {
 						break;
 					}
 				}
-				// tmpmapfinal.remove(entry1.getKey());
 				tmpDate = entry1.getValue();
 			}
 			
@@ -544,7 +513,6 @@ class ConfigHandler extends DefaultHandler {
 			if (((now.getYear() + 1900) - (maximum.getYear() + 1900)) > 3) { // +1900
 				// 3 Jahre nicht mehr stattgefunden
 				mapfinal.remove(entry.getKey());
-				//mapfinal.put(entry.getKey(), new Conf(new Date(), -1));// !!
 				outdated.put(entry.getKey(), new Conf(tmpDate, -1));
 			} else {
 				int counter1 = 0;
@@ -554,8 +522,7 @@ class ConfigHandler extends DefaultHandler {
 				int y = 1;
 
 				if (year.size() == 1) {
-					// Konferenz erst ein mal stattgefunden, evtl Ausgabe mit
-					// Benachrichtigung
+					// Konferenz erst ein mal stattgefunden
 					double sonderfall = -2;
 					mapfinal.put(entry.getKey(), new Conf(new Date(),sonderfall));
 				} else {if (year.size() < 6) {
@@ -563,8 +530,6 @@ class ConfigHandler extends DefaultHandler {
 				}
 				
 					for (int i = 1; y < 6; i++, y++) {
-						// System.out.println(year.size() - (i));
-						// System.out.println(year.size() - (i + 1));
 						if ((year.get(year.size() - (i)).getYear() - year.get(year.size()- (i + 1)).getYear()) == 1) {
 							counter1++;
 						} else {if ((year.get(year.size() - (i)).getYear() - year.get(year.size() - (i + 1)).getYear()) == 2) {
@@ -607,31 +572,21 @@ class ConfigHandler extends DefaultHandler {
 		}
 		System.out.println("Jahresabstand berechnet.");
 	}
-
 	public void endPrefixMapping(String prefix) throws SAXException {
 	}
-
-	public void ignorableWhitespace(char[] ch, int start, int length)
-			throws SAXException {
+	public void ignorableWhitespace(char[] ch, int start, int length)throws SAXException {
 	}
-
-	public void processingInstruction(String target, String data)
-			throws SAXException {
+	public void processingInstruction(String target, String data)throws SAXException {
 	}
-
 	public void setDocumentLocator(Locator locator) {
 	}
-
 	public void skippedEntity(String name) throws SAXException {
 	}
-
 	public void startDocument() throws SAXException {
 		System.out.println("Document starts.");
 
 		time = System.currentTimeMillis();
 	}
-
-	public void startPrefixMapping(String prefix, String uri)
-			throws SAXException {
+	public void startPrefixMapping(String prefix, String uri)throws SAXException {
 	}
 }
