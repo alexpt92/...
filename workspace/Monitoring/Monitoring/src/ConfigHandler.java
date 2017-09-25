@@ -1,4 +1,4 @@
-package monitoring;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -34,7 +34,7 @@ class ConfigHandler extends DefaultHandler {
 	Map<String, Conf> finalmap = new HashMap<String, Conf>();
 	Map<String, Conf> outdated = new HashMap<String, Conf>();
 	Map<String, Date> customdate = new HashMap<String, Date>();
-	Map<String, Date> sonderfall = new HashMap<String, Date>();
+	Map<String, Date> nodate = new HashMap<String, Date>();
 	
 	
 	int ohneMonat = 0;
@@ -114,8 +114,7 @@ class ConfigHandler extends DefaultHandler {
 			String text = textContent.toString();
 			Date zero = new Date(100,11,31);
 
-			Pattern noDate = Pattern.compile("\\d\\d\\d\\d");
-			Matcher regexMatcher = noDate.matcher(aktuellerStream);
+		
 
 			if (aktuellerStream != null) {
 				if (text.contains("January")) {
@@ -163,7 +162,7 @@ class ConfigHandler extends DefaultHandler {
 					ohneMonat++;
 
 					dblpEntry.put(aktuellerStream,zero);
-					sonderfall.put(aktuellerStream, zero);
+					nodate.put(aktuellerStream, zero);
 				}}}}}}}}}}}}}}}}}}}}
 			}textContent.delete(0, textContent.length());
 		}
@@ -187,13 +186,12 @@ class ConfigHandler extends DefaultHandler {
 		Pattern oneday = Pattern.compile("\\d");
 		Pattern twoday = Pattern.compile("\\d\\d\\p{Punct}\\d\\d");
 		Matcher yearMatcher = year.matcher(s);
-		Matcher dayPointMatcher = year.matcher(s);
+		Matcher dayPointMatcher = daypoint.matcher(s);
 		Matcher ohneYearMatcher = year.matcher(aktuellerStream);
 		Matcher daysMatcher = days.matcher(s);
 		Matcher onedayMatcher = oneday.matcher(s);
 		Matcher twodayMatcher = twoday.matcher(s);
 
-		
 		// Berechnung des Monats
 		if (s.contains("January")|| s.contains("Januar")) {
 			monat = 0;
@@ -273,8 +271,8 @@ class ConfigHandler extends DefaultHandler {
 		yearFinal(dblpEntryFinal, finalMapFinal);
 		datumFinal(dblpEntryFinal, finalMapFinal);
 		//_____________________________________________________________________________________
-		Map<String, Date> sonderfallFinal = new TreeMap<String, Date>(sonderfall);
-		Map<String, Conf> outdatedFinal = new TreeMap<String, Conf>(outdated);
+		Map<String, Date> nodatefinal = new TreeMap<String, Date>(nodate);
+		//Map<String, Conf> outdatedFinal = new TreeMap<String, Conf>(outdated);
 		Map<String, Date> customfinal = new TreeMap<String, Date>(customdate);
 		
 		//PrintMaps____________________________________________________________________________
@@ -292,12 +290,12 @@ class ConfigHandler extends DefaultHandler {
 			e.printStackTrace();
 		}
 		
-		//Print sonderfallFinal
+		//Print noDate
 		try {
 			PrintStream ps;
 			ps = new PrintStream(new File("noDate.txt"));
 
-			for (Entry<String, Date> entry : sonderfallFinal.entrySet()) {
+			for (Entry<String, Date> entry : nodatefinal.entrySet()) {
 				ps.println(entry.getKey() + " ;" + entry.getValue());
 
 			}
@@ -319,19 +317,7 @@ class ConfigHandler extends DefaultHandler {
 				e.printStackTrace();
 		}
 		
-		//Print outdatedfinal
-		try {
-			PrintStream ps;
-			ps = new PrintStream(new File("Outdated.txt"));
-
-			for (Entry<String, Conf> entry : outdatedFinal.entrySet()) {
-				ps.println(entry.getKey() + " ;" + entry.getValue().getDate()
-						+ " ;" + entry.getValue().getYear());
-			}
-			ps.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+		
 
 		//Print mapfinal
 		try {
@@ -365,7 +351,7 @@ class ConfigHandler extends DefaultHandler {
 		String line;
 		
 		try{
-			//TODO:Change Custom
+		
 			String working_dir = System.getProperty("user.dir");
 
 			bf=new BufferedReader(new FileReader(working_dir + "/Customdate.txt"));
@@ -384,7 +370,7 @@ class ConfigHandler extends DefaultHandler {
 	public void datumFinal(Map<String, Date> map, Map<String, Conf> mapfinal) {
 		System.out.println("Berechne Monate.");
 		Map<String, Date> tmpmap = map;
-	//	Map<String, Integer> monthcounter = new HashMap<String, Integer>();
+
 			
 		for (Entry<String, Conf> entry : mapfinal.entrySet()) {
 			Date tmpDate = new Date();
@@ -553,31 +539,39 @@ class ConfigHandler extends DefaultHandler {
 						}}}}
 
 					}
-				
-					if (counter1 > counter2 && counter1 > counter3 && counter1 > counter05 
-							|| counter1 == counter2 && counter1 > counter3 && counter1 > counter05
-							|| counter1 == counter3 && counter1 > counter05&& counter1 > counter2
-					   		|| counter1 == counter2 && counter1==counter3 && counter1!=0) {
+					if (counter05>counter1 && counter05>counter2 && counter05>counter3
+							|| counter05==counter1 && counter05>counter2 && counter05>counter3
+							|| counter05==counter2 && counter05>counter1 && counter05>counter3
+							|| counter05==counter3 && counter05>counter1 && counter05>counter2
+							|| counter05==counter1 && counter05==counter2 && counter05>counter3
+							|| counter05==counter1 && counter05==counter3 && counter05>counter2
+							|| counter05==counter2 && counter05==counter3 && counter05>counter1
+							|| counter05==counter1 && counter05==counter2 && counter05==counter3 && counter05!=0
+							) {
+							mapfinal.get(entry.getKey()).setDate(maximum);
+							mapfinal.get(entry.getKey()).getDate().setYear(maximum.getYear());
+							mapfinal.get(entry.getKey()).setYear(0.5);
+					}else {if (counter1>counter2 && counter1>counter3 
+							|| counter1==counter2 && counter1>counter3 
+							|| counter1==counter3 && counter1>counter2
+							|| counter1==counter2 && counter1==counter3 && counter1!=0
+							) {
 							// Jahresabstand 1 -> Letztes Veranstaltungsjahr +1
 							mapfinal.get(entry.getKey()).setDate(maximum);
 							mapfinal.get(entry.getKey()).getDate().setYear(maximum.getYear() + 1);
 							mapfinal.get(entry.getKey()).setYear(1);
-					} else {if (counter2 > counter1 && counter2 > counter3&& counter2 > counter05 
-							|| counter2 == counter3 && counter2 > counter05) {
+					} else {if (counter2 > counter3 
+							|| counter2==counter3 && counter2!=0) {
 							// Jahresabstand 2 -> Letztes Veranstaltungsjahr +2
 							mapfinal.get(entry.getKey()).setDate(maximum);
 							mapfinal.get(entry.getKey()).getDate().setYear(maximum.getYear() + 2);
 							mapfinal.get(entry.getKey()).setYear(2);
-					} else {if (counter3 > counter2 && counter3 > counter1&& counter3 > counter05) {
+					} else {if (counter3!=0) {
 							// Jahresabstand 3 -> Letztes Veranstaltungsjahr +3
 							mapfinal.get(entry.getKey()).setDate(maximum);
 							mapfinal.get(entry.getKey()).getDate().setYear(maximum.getYear() + 3);
 							mapfinal.get(entry.getKey()).setYear(3);
-					} else {if (counter05 > counter1&& counter05 > counter2 && counter05 > counter3) {
-							mapfinal.get(entry.getKey()).setDate(maximum);
-							mapfinal.get(entry.getKey()).getDate().setYear(maximum.getYear());
-							mapfinal.get(entry.getKey()).setYear(0.5);
-					}else{
+					} else {
 							mapfinal.put(entry.getKey(), new Conf(new Date(),-3));
 					}}}}
 				}
