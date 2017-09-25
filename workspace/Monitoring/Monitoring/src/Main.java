@@ -56,7 +56,7 @@ import java.io.FileReader;
 import java.io.FileInputStream;
 
 
-public class Main {
+public class Maain {
 
 	public static void main(String[] args) throws ParseException {
 		//
@@ -66,8 +66,6 @@ public class Main {
 			XMLReader xmlReader = XMLReaderFactory.createXMLReader();
 		//	File file= new File(JOptionPane.showInputDialog("Bitte geben Sie den Pfad der DBLP.xml an:"));
 
-			// ZipFile f = new
-			// ZipFile("http://dblp.uni-trier.de/xml/dblp.xml.gz");
 
 			// Pfad zur XML Datei
 			// TODO:Change Custom
@@ -80,7 +78,7 @@ public class Main {
 //
 			// DTD kann optional übergeben werden
 			// TODO:Change Custom
-		//	inputSource.setSystemId("H:/SelfWorkspace/dblp.dtd");
+			//inputSource.setSystemId("H:/SelfWorkspace/dblp.dtd");
 
 			// PersonenContentHandler wird übergeben
 			xmlReader.setContentHandler(new ConfigHandler());
@@ -114,8 +112,6 @@ public class Main {
 
 		// Read from MapFinalPrint.txt to alertMap || upcomingMap
 		try {
-			// TODO:Change Custom
-		//	File fi = new File("");
 			String working_dir = System.getProperty("user.dir");
 			bf = new BufferedReader(new FileReader(working_dir + "/MapFinalPrint.txt"));
 			while ((line = bf.readLine()) != null) {
@@ -156,19 +152,6 @@ public class Main {
 			h.printStackTrace();
 		}
 		
-		// Print finalUp
-		try {
-			PrintStream ps;
-			ps = new PrintStream(new File("Upcoming.txt"));
-
-			for (Entry<String, Date> entry : finalUp.entrySet()) {
-				ps.println(entry.getKey() + " ;" + entry.getValue());
-			}
-			ps.close();
-		} catch (FileNotFoundException h) {
-			h.printStackTrace();
-		}
-
 		// GUI______________________________________________________________
 		JFrame frame = new JFrame("Controlling");
 
