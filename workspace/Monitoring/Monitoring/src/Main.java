@@ -1,3 +1,4 @@
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -18,6 +19,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -39,6 +41,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.omg.CORBA.portable.InputStream;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
@@ -50,32 +53,50 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileInputStream;
+
 
 public class Main {
 
 	public static void main(String[] args) throws ParseException {
 		//
+		System.setProperty("entityExpansionLimit", "2500000");
 		try {
 			// XMLReader erzeugen
 			XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+		//	File file= new File(JOptionPane.showInputDialog("Bitte geben Sie den Pfad der DBLP.xml an:"));
 
 			// ZipFile f = new
 			// ZipFile("http://dblp.uni-trier.de/xml/dblp.xml.gz");
 
 			// Pfad zur XML Datei
 			// TODO:Change Custom
-			FileReader reader = new FileReader("H:/SelfWorkspace/dblp.xml");
-			InputSource inputSource = new InputSource(reader);
+			String working_dir = System.getProperty("user.dir");
 
+			FileReader reader = new FileReader(working_dir + "/dblp.xml");
+		InputSource inputSource = new InputSource(reader);
+//
+			
+//
 			// DTD kann optional übergeben werden
 			// TODO:Change Custom
-			inputSource.setSystemId("H:/SelfWorkspace/dblp.dtd");
+		//	inputSource.setSystemId("H:/SelfWorkspace/dblp.dtd");
 
 			// PersonenContentHandler wird übergeben
 			xmlReader.setContentHandler(new ConfigHandler());
 
 			// Parsen wird gestartet
+
+	/*		FileInputStream in = new FileInputStream(file);
+			try{
+			    InputSource is = new InputSource(in);
+			    is.setSystemId(file.getAbsolutePath());
+			    xmlReader.parse(is);
+				
+			}finally{ in.close();}
+		*/inputSource.setSystemId(working_dir + "/dblp.dtd");
 			xmlReader.parse(inputSource);
+
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -94,7 +115,9 @@ public class Main {
 		// Read from MapFinalPrint.txt to alertMap || upcomingMap
 		try {
 			// TODO:Change Custom
-			bf = new BufferedReader(new FileReader("G:/Users/Christian/Dropbox/Universität/SS 2013/Programmierung II/Übungen/StudienProjekt/MapFinalPrint.txt"));
+		//	File fi = new File("");
+			String working_dir = System.getProperty("user.dir");
+			bf = new BufferedReader(new FileReader(working_dir + "/MapFinalPrint.txt"));
 			while ((line = bf.readLine()) != null) {
 				String[] a = line.split(";");
 				Date now = new Date();
@@ -219,8 +242,10 @@ public class Main {
 				String line;
 
 				try {
-					// TODO:Change Custom
-					bf = new BufferedReader(new FileReader("G:/Users/Christian/Dropbox/Universität/SS 2013/Programmierung II/Übungen/StudienProjekt/Customdate.txt"));
+					// TODO:Change Custom			
+					String working_dir = System.getProperty("user.dir");
+
+					bf = new BufferedReader(new FileReader(working_dir +  "/Customdate.txt"));
 					
 					while ((line = bf.readLine()) != null) {
 						String[] a = line.split(" ;");
