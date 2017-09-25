@@ -1,3 +1,4 @@
+package monitoring;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -183,14 +184,15 @@ class ConfigHandler extends DefaultHandler {
 		Pattern year = Pattern.compile("\\d\\d\\d\\d");
 		Pattern daypoint = Pattern.compile("'\\d\\p{Punct}\\d");
 		Pattern days = Pattern.compile("\\d\\d");
-		Pattern twoday = Pattern.compile("\\d\\d\\p{Punct}\\d\\d");
 		Pattern oneday = Pattern.compile("\\d");
+		Pattern twoday = Pattern.compile("\\d\\d\\p{Punct}\\d\\d");
 		Matcher yearMatcher = year.matcher(s);
 		Matcher dayPointMatcher = year.matcher(s);
 		Matcher ohneYearMatcher = year.matcher(aktuellerStream);
-		Matcher twodayMatcher = twoday.matcher(s);
 		Matcher daysMatcher = days.matcher(s);
 		Matcher onedayMatcher = oneday.matcher(s);
+		Matcher twodayMatcher = twoday.matcher(s);
+
 		
 		// Berechnung des Monats
 		if (s.contains("January")|| s.contains("Januar")) {
@@ -225,6 +227,7 @@ class ConfigHandler extends DefaultHandler {
 			tag = Integer.parseInt(s.substring(twodayMatcher.start(),
 					twodayMatcher.start() + 2));
 		}else{if(dayPointMatcher.find()){
+			
 			tag = Integer.parseInt(s.substring(dayPointMatcher.start(),dayPointMatcher.start() + 1));
 		}else{if (daysMatcher.find()) {
 			tag = Integer.parseInt(s.substring(daysMatcher.start(),daysMatcher.start() + 2));
@@ -248,7 +251,9 @@ class ConfigHandler extends DefaultHandler {
 
 	public void endDocument() throws SAXException {
 		//TODO:Change Custom
-		File f = new File("G:/Users/Christian/Dropbox/Universität/SS 2013/Programmierung II/Übungen/StudienProjekt/Customdate.txt");
+		String working_dir = System.getProperty("user.dir");
+
+		File f = new File(working_dir + "/Customdate.txt");
 		
 		//organice Maps________________________________________________________________________
 		Map<String, Date> dblpEntryFinal = new TreeMap<String, Date>(dblpEntry);
@@ -361,7 +366,9 @@ class ConfigHandler extends DefaultHandler {
 		
 		try{
 			//TODO:Change Custom
-			bf=new BufferedReader(new FileReader("G:/Users/Christian/Dropbox/Universität/SS 2013/Programmierung II/Übungen/StudienProjekt/Customdate.txt"));
+			String working_dir = System.getProperty("user.dir");
+
+			bf=new BufferedReader(new FileReader(working_dir + "/Customdate.txt"));
 			while((line=bf.readLine())!=null){
 				String[] a = line.split(" ;");
 				DateFormat format = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
