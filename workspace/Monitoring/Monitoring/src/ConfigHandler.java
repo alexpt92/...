@@ -183,10 +183,12 @@ class ConfigHandler extends DefaultHandler {
 		Pattern year = Pattern.compile("\\d\\d\\d\\d");
 		Pattern daypoint = Pattern.compile("'\\d\\p{Punct}\\d");
 		Pattern days = Pattern.compile("\\d\\d");
+		Pattern twoday = Pattern.compile("\\d\\d\\p{Punct}\\d\\d");
 		Pattern oneday = Pattern.compile("\\d");
 		Matcher yearMatcher = year.matcher(s);
 		Matcher dayPointMatcher = year.matcher(s);
 		Matcher ohneYearMatcher = year.matcher(aktuellerStream);
+		Matcher twodayMatcher = twoday.matcher(s);
 		Matcher daysMatcher = days.matcher(s);
 		Matcher onedayMatcher = oneday.matcher(s);
 		
@@ -219,13 +221,16 @@ class ConfigHandler extends DefaultHandler {
 		
 		// Berechnung des Tages
 		// vorher gucken ob wirklich zahlen des Tages drinstehen
-		if(dayPointMatcher.find()){
+		if(twodayMatcher.find()){
+			tag = Integer.parseInt(s.substring(twodayMatcher.start(),
+					twodayMatcher.start() + 2));
+		}else{if(dayPointMatcher.find()){
 			tag = Integer.parseInt(s.substring(dayPointMatcher.start(),dayPointMatcher.start() + 1));
 		}else{if (daysMatcher.find()) {
 			tag = Integer.parseInt(s.substring(daysMatcher.start(),daysMatcher.start() + 2));
 		}else{if (onedayMatcher.find()) {
 			tag = Integer.parseInt(s.substring(onedayMatcher.start(),onedayMatcher.start() + 1));
-		}}}
+		}}}}
 
 		// Berechnung des Jahres
 		if (yearMatcher.find()) {// "/d/d/d/d" in "Title" suchen
