@@ -556,7 +556,8 @@ class ConfigHandler extends DefaultHandler {
 				
 					if (counter1 > counter2 && counter1 > counter3 && counter1 > counter05 
 							|| counter1 == counter2 && counter1 > counter3 && counter1 > counter05
-							|| counter1 == counter3 && counter1 > counter05&& counter1 > counter2) {
+							|| counter1 == counter3 && counter1 > counter05&& counter1 > counter2
+					   		|| counter1 == counter2 && counter1==counter3 && counter1!=0) {
 							// Jahresabstand 1 -> Letztes Veranstaltungsjahr +1
 							mapfinal.get(entry.getKey()).setDate(maximum);
 							mapfinal.get(entry.getKey()).getDate().setYear(maximum.getYear() + 1);
