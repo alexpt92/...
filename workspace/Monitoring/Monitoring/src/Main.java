@@ -1,16 +1,47 @@
+
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.net.URL;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map.Entry;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipFile;
 
+import javax.jws.soap.InitParam;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.omg.CORBA.portable.InputStream;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
@@ -22,121 +53,194 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileInputStream;
 
 
+public class Maain {
 
-public class Main {
-	private static long time;
+	public static void main(String[] args) throws ParseException {
+		//
+		System.setProperty("entityExpansionLimit", "2500000");
+		try {
+			// XMLReader erzeugen
+			XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+		//	File file= new File(JOptionPane.showInputDialog("Bitte geben Sie den Pfad der DBLP.xml an:"));
 
-  public static void main(String[] args) {
-	    try {
-	        // XMLReader erzeugen
-	        XMLReader xmlReader = XMLReaderFactory.createXMLReader();
-	        
-	        // Pfad zur XML Datei
-	        FileReader reader = new FileReader("Pfad XML");
-	        InputSource inputSource = new InputSource(reader);
 
-	        // DTD kann optional übergeben werden
-	        inputSource.setSystemId("Pfad .dtd");
+			// Pfad zur XML Datei
+			// TODO:Change Custom
+			String working_dir = System.getProperty("user.dir");
 
-	        // PersonenContentHandler wird übergeben
-	        xmlReader.setContentHandler(new ConfigHandler());
+			FileReader reader = new FileReader(working_dir + "/dblp.xml");
+		InputSource inputSource = new InputSource(reader);
+//
+			
+//
+			// DTD kann optional übergeben werden
+			// TODO:Change Custom
+			//inputSource.setSystemId("H:/SelfWorkspace/dblp.dtd");
 
-	        // Parsen wird gestartet
-	        xmlReader.parse(inputSource);
-	      } catch (FileNotFoundException e) {
-	        e.printStackTrace();
-	      } catch (IOException e) {
-	        e.printStackTrace();
-	      } catch (SAXException e) {
-	        e.printStackTrace();
-	      }
-	    
-	    
-	     class ConfigHandler extends DefaultHandler {
-	    	  
-	    	  //private ArrayList<Person> allePersonen = new ArrayList<Person>();
-	    	  private String currentValue;
-	    	//  private Person person;
+			// PersonenContentHandler wird übergeben
+			xmlReader.setContentHandler(new ConfigHandler());
 
-	    	  // Aktuelle Zeichen die gelesen werden, werden in eine Zwischenvariable
-	    	  // gespeichert
-	    	  public void characters(char[] ch, int start, int length)
-	    	      throws SAXException {
-	    	    currentValue = new String(ch, start, length);
-	    	  }
+			// Parsen wird gestartet
 
-	    	  // Methode wird aufgerufen wenn der Parser zu einem Start-Tag kommt
-	    	  public void startElement(String uri, String localName, String qName,
-	    	      Attributes atts) throws SAXException {
-	    	    if (localName.equals("person")) {
-	    	      // Neue Person erzeugen
-	    	   //   person = new Person();
+	/*		FileInputStream in = new FileInputStream(file);
+			try{
+			    InputSource is = new InputSource(in);
+			    is.setSystemId(file.getAbsolutePath());
+			    xmlReader.parse(is);
+				
+			}finally{ in.close();}
+		*/inputSource.setSystemId(working_dir + "/dblp.dtd");
+			xmlReader.parse(inputSource);
 
-	    	      // Attribut id wird in einen Integer umgewandelt und dann zu der
-	    	      // jeweiligen Person gesetzt
-	    	    //  person.setId(Integer.parseInt(atts.getValue("id")));
-	    	    }
-	    	  }
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
+		}
 
-	    	  // Methode wird aufgerufen wenn der Parser zu einem End-Tag kommt
-	    	  public void endElement(String uri, String localName, String qName)
-	    	      throws SAXException {
+		// Maps____________________________________________________________
+		Map<String, Date> alertMap = new HashMap<String, Date>();
+		Map<String, Date> upcomingMap = new HashMap<String, Date>();
 
-	    	    // Name setzen
-	    	    if (localName.equals("name")) {
-	    	  //    person.setName(currentValue);
-	    	    }
+		BufferedReader bf;
+		String line;
 
-	    	    // Vorname setzen
-	    	    if (localName.equals("vorname")) {
-	    	 //     person.setVorname(currentValue);
-	    	    }
+		// Read from MapFinalPrint.txt to alertMap || upcomingMap
+		try {
+			String working_dir = System.getProperty("user.dir");
+			bf = new BufferedReader(new FileReader(working_dir + "/MapFinalPrint.txt"));
+			while ((line = bf.readLine()) != null) {
+				String[] a = line.split(";");
+				Date now = new Date();
+				now.setDate(now.getDate() + 3);
+				if (a[2].contains("ALERT")) {
+					DateFormat format = new SimpleDateFormat(" EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
+					Date date = format.parse(a[1]);
+					alertMap.put(a[0], date);
+				} else {
+					DateFormat format = new SimpleDateFormat(" EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
+					Date date = format.parse(a[1]);
+					if (date.before(now) && date.after(new Date())) {
+						upcomingMap.put(a[0], date);
+					}
+				}
+			}
+			bf.close();
+		} catch (IOException e) {
 
-	    	    // Datum parsen und setzen
-	    	    if (localName.equals("geburtsdatum")) {
-	    	      SimpleDateFormat datumsformat = new SimpleDateFormat("dd.MM.yyyy");
-	    	      try {
-	    	        Date date = datumsformat.parse(currentValue);
-	    	     //   person.setGeburtsdatum(date);
-	    	      } catch (ParseException e) {
-	    	        e.printStackTrace();
-	    	      }
-	    	    }
+		}
 
-	    	    // Postleitzahl setzen
-	    	    if (localName.equals("postleitzahl")) {
-	    	    //  person.setPostleitzahl(currentValue);
-	    	    }
+		// Organize Maps
+		Map<String, Date> finalAlert = new TreeMap<String, Date>(alertMap);
+		Map<String, Date> finalUp = new TreeMap<String, Date>(upcomingMap);
 
-	    	    // Ort setzen
-	    	    if (localName.equals("ort")) {
-	    	   //   person.setOrt(currentValue);
-	    	    }
+		// Print finalAlert
+		try {
+			PrintStream ps;
+			ps = new PrintStream(new File("Alert.txt"));
 
-	    	    // Person in Personenliste abspeichern falls Person End-Tag erreicht
-	    	    // wurde.
-	    	    if (localName.equals("person")) {
-	    	    //  allePersonen.add(person);
-	    	    //  System.out.println(person);
-	    	    }
-	    	  }
+			for (Entry<String, Date> entry : finalAlert.entrySet()) {
+				ps.println(entry.getKey() + " ;" + entry.getValue());
+			}
+			ps.close();
+		} catch (FileNotFoundException h) {
+			h.printStackTrace();
+		}
+		
+		// GUI______________________________________________________________
+		JFrame frame = new JFrame("Controlling");
 
-	    	  public void endDocument() throws SAXException {}
-	    	  public void endPrefixMapping(String prefix) throws SAXException {}
-	    	  public void ignorableWhitespace(char[] ch, int start, int length)
-	    	      throws SAXException {}
-	    	  public void processingInstruction(String target, String data)
-	    	      throws SAXException {}
-	    	  public void setDocumentLocator(Locator locator) {  }
-	    	  public void skippedEntity(String name) throws SAXException {}
-	    	  
-	    	  public void startDocument() throws SAXException {			
-	    		  System.out.println("Document starts.");
-	    		time = System.currentTimeMillis();}
-	    	  
-	    	  public void startPrefixMapping(String prefix, String uri)
-	    	    throws SAXException {}
-	    	} }
-  }
+		frame.setSize(500, 200);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		JPanel panel = new JPanel();
+		// frame.getContentPane().add(BorderLayout.CENTER, panel);;
+
+		JTextArea upcoming = new JTextArea("Upcoming:"+"\n");
+		JButton button = new JButton("Change Customdate");
+		JScrollPane scroll = new JScrollPane(upcoming);
+		
+		scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		
+		panel.setLayout(new BorderLayout());		
+		panel.add(button, BorderLayout.EAST);
+		panel.add(scroll, BorderLayout.CENTER);
+		
+		//textfeld mit finalUp füllen
+		for (Entry<String, Date> entry1 : finalUp.entrySet()) {
+			upcoming.setText(upcoming.getText()+(entry1.getKey()+"; "+ entry1.getValue()+"\n"));
+		}
+		
+		frame.add(panel);
+		frame.setVisible(true);
+		
+		button.addActionListener(new ActionListener() {
+			Map<String, Date> customdate = new HashMap<String, Date>();
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					readCustomDate();
+				} catch (ParseException e1) {
+					e1.printStackTrace();
+				}
+
+				String t = "conf/"+ JOptionPane.showInputDialog("Bitte Kürzel der Conference eingeben")+ "/";
+
+				int d = Integer.parseInt(JOptionPane.showInputDialog("Bitte Tag eingeben (1-31)"));
+				int m = Integer.parseInt(JOptionPane.showInputDialog("Bitte Monat eingeben (1-12)"));
+				int y = Integer.parseInt(JOptionPane.showInputDialog("Bitte Jahr eingeben"));
+
+				for (Entry<String, Date> entry : customdate.entrySet()) {
+					if (entry.getKey().equals(t)) {
+						Date tmp = new Date(y - 1900, m - 1, d);
+						entry.setValue(tmp);
+
+					}
+				}
+				//organize Map
+				Map<String, Date> customfinal = new TreeMap<String, Date>(customdate);
+
+				try {
+					PrintStream ps;
+					ps = new PrintStream(new File("Customdate.txt"));
+
+					for (Entry<String, Date> entry : customfinal.entrySet()) {
+						ps.println(entry.getKey() + " ;" + entry.getValue());
+					}
+					ps.close();
+				} catch (FileNotFoundException h) {
+					h.printStackTrace();
+				}
+			}
+			
+			//read 
+			public void readCustomDate() throws ParseException {
+				BufferedReader bf;
+				String line;
+
+				try {
+					// TODO:Change Custom			
+					String working_dir = System.getProperty("user.dir");
+
+					bf = new BufferedReader(new FileReader(working_dir +  "/Customdate.txt"));
+					
+					while ((line = bf.readLine()) != null) {
+						String[] a = line.split(" ;");
+						DateFormat format = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
+						Date date = format.parse(a[1]);
+						customdate.put(a[0], date);
+					}
+					bf.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+}
